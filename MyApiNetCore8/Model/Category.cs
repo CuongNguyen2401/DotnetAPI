@@ -3,7 +3,7 @@
 namespace MyApiNetCore8.Model
 {
   
-    public class Category : BaseEntity
+    public class Category : BaseDTO
     {
         public long id { get; set; }
         public string description { get; set; }

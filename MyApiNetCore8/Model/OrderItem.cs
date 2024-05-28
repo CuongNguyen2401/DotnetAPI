@@ -2,7 +2,7 @@
 
 namespace MyApiNetCore8.Model
 {
-    public class OrderItem : BaseEntity
+    public class OrderItem : BaseDTO
     {
         public long id { get; set; }
         public double price { get; set; }

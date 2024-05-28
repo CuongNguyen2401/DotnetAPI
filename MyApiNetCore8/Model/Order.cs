@@ -1,6 +1,6 @@
 ﻿namespace MyApiNetCore8.Model
 {
-    public class Order : BaseEntity
+    public class Order : BaseDTO
     {
         public long id { get; set; }
         public string address { get; set; }

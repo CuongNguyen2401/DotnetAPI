@@ -20,11 +20,11 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="DTO\Request\" />
     <Folder Include="Helper\" />
     <Folder Include="Migrations\" />
     <Folder Include="Mapper\" />
-    <Folder Include="Repositories\impl\" />
-    <Folder Include="Service\" />
+    <Folder Include="Service\impl\" />
   </ItemGroup>
 
 </Project>
