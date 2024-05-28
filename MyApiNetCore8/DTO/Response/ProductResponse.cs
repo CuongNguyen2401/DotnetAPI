@@ -11,7 +11,7 @@ namespace MyApiNetCore8.DTO.Response
         public string image { get; set; }
         public int stock { get; set; }
         public string category { get; set; }
-        []
+        
 
     }
 }

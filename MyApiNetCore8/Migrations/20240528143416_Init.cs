@@ -23,9 +23,10 @@ namespace MyApiNetCore8.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     description = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    name = table.Column<string>(type: "longtext", nullable: true)
+                    name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    status = table.Column<int>(type: "int", nullable: false),
+                    status = table.Column<string>(type: "ENUM('ACTIVE', 'INACTIVE')", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     created_by = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -45,16 +46,17 @@ namespace MyApiNetCore8.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    address = table.Column<string>(type: "longtext", nullable: true)
+                    address = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    customer_name = table.Column<string>(type: "longtext", nullable: true)
+                    customer_name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    email = table.Column<string>(type: "longtext", nullable: true)
+                    email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     note = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    order_status = table.Column<int>(type: "int", nullable: false),
-                    phone_number = table.Column<string>(type: "longtext", nullable: true)
+                    order_status = table.Column<string>(type: "ENUM('PENDING', 'CONFIRMED', 'SHIPPING', 'DELIVERED', 'CANCELLED')", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    phone_number = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     total_pay = table.Column<double>(type: "double", nullable: false),
                     created_by = table.Column<string>(type: "longtext", nullable: true)
@@ -128,16 +130,16 @@ namespace MyApiNetCore8.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     image = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    name = table.Column<string>(type: "longtext", nullable: true)
+                    name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     price = table.Column<double>(type: "double", nullable: false),
-                    product_status = table.Column<string>(type: "longtext", nullable: true)
+                    status = table.Column<string>(type: "ENUM('ACTIVE', 'INACTIVE')", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     quantity = table.Column<int>(type: "int", nullable: false),
-                    sale_price = table.Column<double>(type: "double", nullable: false),
+                    sale_price = table.Column<double>(type: "double", nullable: true),
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    category_id = table.Column<long>(type: "bigint", nullable: false),
+                    category_id = table.Column<long>(type: "bigint", nullable: true),
                     created_by = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -152,8 +154,7 @@ namespace MyApiNetCore8.Migrations
                         name: "FK_Product_Category_category_id",
                         column: x => x.category_id,
                         principalTable: "Category",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 

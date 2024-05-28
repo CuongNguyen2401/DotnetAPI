@@ -12,7 +12,7 @@ using MyApiNetCore8.Model;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240527065848_Init")]
+    [Migration("20240528143416_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -49,10 +49,13 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("name")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
-                    b.Property<int>("status")
-                        .HasColumnType("int");
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("ENUM('ACTIVE', 'INACTIVE')");
 
                     b.HasKey("id");
 
@@ -68,7 +71,9 @@ namespace MyApiNetCore8.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
                     b.Property<string>("address")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime(6)");
@@ -77,10 +82,14 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("customer_name")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("email")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("modifiedBy")
                         .HasColumnType("longtext");
@@ -91,10 +100,12 @@ namespace MyApiNetCore8.Migrations
                     b.Property<string>("note")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("order_status")
-                        .HasColumnType("int");
+                    b.Property<string>("order_status")
+                        .IsRequired()
+                        .HasColumnType("ENUM('PENDING', 'CONFIRMED', 'SHIPPING', 'DELIVERED', 'CANCELLED')");
 
                     b.Property<string>("phone_number")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<double>("total_pay")
@@ -157,7 +168,7 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<long>("category_id")
+                    b.Property<long?>("category_id")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("createdDate")
@@ -179,22 +190,25 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("name")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<double>("price")
                         .HasColumnType("double");
 
-                    b.Property<string>("product_status")
-                        .HasColumnType("longtext");
-
                     b.Property<int>("quantity")
                         .HasColumnType("int");
 
-                    b.Property<double>("sale_price")
+                    b.Property<double?>("sale_price")
                         .HasColumnType("double");
 
                     b.Property<string>("slug")
                         .HasColumnType("longtext");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("ENUM('ACTIVE', 'INACTIVE')");
 
                     b.HasKey("id");
 
@@ -374,9 +388,7 @@ namespace MyApiNetCore8.Migrations
                 {
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("category_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("category_id");
 
                     b.Navigation("Category");
                 });

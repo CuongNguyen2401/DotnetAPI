@@ -5,7 +5,9 @@ namespace MyApiNetCore8.Model
 {
     public class Rating : BaseDTO
     {
+        [Key]
         public int id { get; set; }
+
         public int rate { get; set; }
         public long user_id { get; set; }
         [ForeignKey("user_id")]

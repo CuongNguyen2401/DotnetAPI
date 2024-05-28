@@ -1,11 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyApiNetCore8.Model
 {
     public class OrderItem : BaseDTO
     {
+        [Key]
         public long id { get; set; }
+        [Required]
         public double price { get; set; }
+        [Required]
         public int quantity { get; set; }
         public long order_id { get; set; }
         [ForeignKey("order_id")]

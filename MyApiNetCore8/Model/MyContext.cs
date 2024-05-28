@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MyApiNetCore8.Model
 {
@@ -7,6 +8,7 @@ namespace MyApiNetCore8.Model
         public MyContext(DbContextOptions<MyContext> options) : base(options)
         {
         }
+ 
         #region DbSet
         public DbSet<Product> Product { get; set; }
         public DbSet<Category> Category { get; set; }
@@ -15,7 +17,16 @@ namespace MyApiNetCore8.Model
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
         public DbSet<Role> Role { get; set; }
-           
+
         #endregion
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
+
+
+
+        //    // Configure the Category entity if needed
+        //    // Add configurations for other entities as needed
+        //}
     }
 }
