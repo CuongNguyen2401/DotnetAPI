@@ -30,9 +30,11 @@ namespace MyApiNetCore8.Model
         [ForeignKey("category_id")]
 
         public Category? Category { get; set; }
-        public ICollection<OrderItem> OrderItems { get; set; }
-        //public ICollection<Rating> Ratings { get; set; }
-        public ICollection<RelatedProduct> RelatedProducts { get; set; }
+        public HashSet<OrderItem> OrderItems { get; set; }
+    
+        public HashSet<Rating> Ratings { get; set; }
+
+        public HashSet<RelatedProduct> RelatedProducts { get; set; }
         public enum ProductType
         {
             ACTIVE, INACTIVE

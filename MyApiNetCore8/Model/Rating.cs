@@ -8,6 +8,7 @@ namespace MyApiNetCore8.Model
         [Key]
         public int id { get; set; }
 
+        [Range(1, 5)]
         public int rate { get; set; }
         public long user_id { get; set; }
         [ForeignKey("user_id")]

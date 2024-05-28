@@ -1,12 +1,23 @@
-﻿namespace MyApiNetCore8.Model
+﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace MyApiNetCore8.Model
 {
-    public class BaseEntity
+    
+    public abstract class BaseEntity
     {
+        public string? CreatedBy { get; set; }
+        [DataType(DataType.DateTime)]
+        [DefaultValue("CURRENT_TIMESTAMP")]
+        [Required]
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+        public string? ModifiedBy { get; set; }
+        [DefaultValue("CURRENT_TIMESTAMP")]
+        [DataType(DataType.DateTime)]
+        [Required]
+        public DateTime? ModifiedDate { get; set; } = DateTime.Now;
 
-        public string created_by { get; set; }
-        public DateTime createdDate { get; set; }
-        public string modifiedBy { get; set; }
-        public DateTime modifiedDate { get; set; }
-
+       
     }
 }

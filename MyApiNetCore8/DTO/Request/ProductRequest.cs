@@ -10,6 +10,6 @@
         int quantity { get; set; }
         long categoryId { get; set; }
         string image { get; set; }
-        List<long> relatedProducts { get; set; }
+        HashSet<long> relatedProducts { get; set; }
     }
 }

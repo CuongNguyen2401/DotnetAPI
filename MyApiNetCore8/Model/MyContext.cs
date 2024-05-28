@@ -28,5 +28,31 @@ namespace MyApiNetCore8.Model
         //    // Configure the Category entity if needed
         //    // Add configurations for other entities as needed
         //}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                var connectionString = "Server=localhost; database=dotnetStore;user=root;password=;AllowZeroDateTime=True;";
+                optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            }
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+                {
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property("CreatedDate")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property("ModifiedDate")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                }
+            }
+
+        }
     }
 }

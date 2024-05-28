@@ -12,8 +12,8 @@ using MyApiNetCore8.Model;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240528143416_Init")]
-    partial class Init
+    [Migration("20240528161602_dbInit")]
+    partial class dbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -396,7 +396,7 @@ namespace MyApiNetCore8.Migrations
             modelBuilder.Entity("MyApiNetCore8.Model.Rating", b =>
                 {
                     b.HasOne("MyApiNetCore8.Model.Product", "Product")
-                        .WithMany()
+                        .WithMany("Ratings")
                         .HasForeignKey("product_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -453,6 +453,8 @@ namespace MyApiNetCore8.Migrations
             modelBuilder.Entity("MyApiNetCore8.Model.Product", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Ratings");
 
                     b.Navigation("RelatedProducts");
                 });

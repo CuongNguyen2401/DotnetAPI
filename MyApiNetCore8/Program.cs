@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MyApiNetCore8.Model;
+using MyApiNetCore8.Repository;
+using MyApiNetCore8.Repository.impl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ builder.Services.AddDbContext<MyContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("dotnetStore"), new MySqlServerVersion(new Version(8, 0, 26)));
 });
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddScoped<IProductRepository,ProductRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
