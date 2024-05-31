@@ -14,7 +14,7 @@ namespace MyApiNetCore8.Model
         public DbSet<Product> Product { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Rating> Rating { get; set; }
-        public DbSet<RelatedProduct> RelatedProduct { get; set; }
+        //public DbSet<Product> RelatedProduct { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
         public DbSet<Role> Role { get; set; }

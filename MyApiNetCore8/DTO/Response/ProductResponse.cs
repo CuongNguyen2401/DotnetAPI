@@ -14,7 +14,7 @@ namespace MyApiNetCore8.DTO.Response
         public double sale_price { get; set; }
         public string image { get; set; }
         public int stock { get; set; }
-        public ProductType status { get; set; } = ProductType.ACTIVE;
+        public Status status { get; set; } = Status.ACTIVE;
         
   
         public CategoryResponse category { get; set; }

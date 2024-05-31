@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyApiNetCore8.Model
@@ -17,5 +18,6 @@ namespace MyApiNetCore8.Model
         [Required]
         [ForeignKey("product_id")]
         public Product Product { get; set; }
+      
     }
 }

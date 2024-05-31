@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using MyApiNetCore8.Enums;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,7 +22,7 @@ namespace MyApiNetCore8.Model
 
         [Column(TypeName = "ENUM('ACTIVE', 'INACTIVE')")]
     
-        public ProductType status { get; set; }= ProductType.ACTIVE;
+        public Status status { get; set; }= Status.ACTIVE;
         [Required]
         public int quantity { get; set; }
         public double sale_price { get; set; }
@@ -34,10 +35,7 @@ namespace MyApiNetCore8.Model
     
         public HashSet<Rating> Ratings { get; set; }
 
-        public HashSet<RelatedProduct> RelatedProducts { get; set; }
-        public enum ProductType
-        {
-            ACTIVE, INACTIVE
-        }
+        public HashSet<Product> RelatedProducts { get; set; }
+       
     }
 }

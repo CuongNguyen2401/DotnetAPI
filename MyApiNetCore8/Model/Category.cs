@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MyApiNetCore8.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyApiNetCore8.Model
@@ -13,12 +14,9 @@ public class Category : BaseDTO
         public string name { get; set; }
 
         [Column(TypeName = "ENUM('ACTIVE', 'INACTIVE')")]
-        public StatusType status { get; set; }
+        public Status status { get; set; }
 
         public ICollection<Product> Products { get; set; }
     }
-    public enum StatusType
-    {
-        ACTIVE, INACTIVE
-    }
+    
 }
