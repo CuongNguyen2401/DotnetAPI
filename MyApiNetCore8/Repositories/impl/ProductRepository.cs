@@ -21,6 +21,8 @@ namespace MyApiNetCore8.Repository.impl
         public async Task<ProductResponse> CreateProductAsync(ProductRequest product)
         {
             var productEntity = _mapper.Map<Product>(product);
+            productEntity.createdDate = DateTime.UtcNow;
+            productEntity.modifiedDate = DateTime.UtcNow;
             _context.Product.Add(productEntity);
             await _context.SaveChangesAsync();
             return _mapper.Map<ProductResponse>(productEntity);
@@ -28,13 +30,17 @@ namespace MyApiNetCore8.Repository.impl
 
         public async Task<List<ProductResponse>> GetAllProductsAsync()
         {
-            var products = await _context.Product.ToListAsync();
+            var products = await _context.Product
+                .Include(m=>m.Category)
+                .ToListAsync();
             return _mapper.Map<List<ProductResponse>>(products);
         }
 
         public async Task<ProductResponse> GetProductByIdAsync(long id)
         {
-            var product = await _context.Product.FirstOrDefaultAsync(x => x.id == id);
+            var product = await _context.Product
+                .Include (m=>m.Category)
+                .FirstOrDefaultAsync(x => x.id == id);
             return _mapper.Map<ProductResponse>(product);
         }
 

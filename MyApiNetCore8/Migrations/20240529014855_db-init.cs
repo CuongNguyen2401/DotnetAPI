@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyApiNetCore8.Migrations
 {
     /// <inheritdoc />
-    public partial class dbInit : Migration
+    public partial class dbinit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -136,10 +136,10 @@ namespace MyApiNetCore8.Migrations
                     status = table.Column<string>(type: "ENUM('ACTIVE', 'INACTIVE')", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     quantity = table.Column<int>(type: "int", nullable: false),
-                    sale_price = table.Column<double>(type: "double", nullable: true),
+                    sale_price = table.Column<double>(type: "double", nullable: false),
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    category_id = table.Column<long>(type: "bigint", nullable: true),
+                    category_id = table.Column<long>(type: "bigint", nullable: false),
                     created_by = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -154,7 +154,8 @@ namespace MyApiNetCore8.Migrations
                         name: "FK_Product_Category_category_id",
                         column: x => x.category_id,
                         principalTable: "Category",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 

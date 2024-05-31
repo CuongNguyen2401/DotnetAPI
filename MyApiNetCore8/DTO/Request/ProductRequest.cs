@@ -2,14 +2,14 @@
 {
     public class ProductRequest
     {
-        long id { get; set; }
-        string name { get; set; }
-        string description { get; set; }
-        double price { get; set; }
-        double salePrice { get; set; }
-        int quantity { get; set; }
-        long categoryId { get; set; }
-        string image { get; set; }
-        HashSet<long> relatedProducts { get; set; }
+
+        public string name { get; set; }
+        public string description { get; set; }
+        public double price { get; set; }
+        public double salePrice { get; set; }
+        public int quantity { get; set; }
+        public long categoryId { get; set; }
+        public string image { get; set; }
+        //public HashSet<long> relatedProducts { get; set; }
     }
 }

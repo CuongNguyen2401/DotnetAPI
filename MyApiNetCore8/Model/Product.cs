@@ -12,8 +12,8 @@ namespace MyApiNetCore8.Model
         [Key]
         public long id { get; set; }
         
-        public string? description { get; set; }
-        public string? image { get; set; }
+        public string description { get; set; }
+        public string image { get; set; }
         [Required, MaxLength(50)]
         public string name { get; set; }
         [Required, Range(0,100000)]
@@ -24,12 +24,12 @@ namespace MyApiNetCore8.Model
         public ProductType status { get; set; }= ProductType.ACTIVE;
         [Required]
         public int quantity { get; set; }
-        public double? sale_price { get; set; }
+        public double sale_price { get; set; }
         public string slug { get; set; }
-        public long? category_id { get; set; }
+        public long category_id { get; set; }
         [ForeignKey("category_id")]
 
-        public Category? Category { get; set; }
+        public Category Category { get; set; }
         public HashSet<OrderItem> OrderItems { get; set; }
     
         public HashSet<Rating> Ratings { get; set; }

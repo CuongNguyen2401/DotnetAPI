@@ -8,7 +8,7 @@ public class Category : BaseDTO
     {
         [Key]
         public long id { get; set; }
-        public string? description { get; set; }
+        public string description { get; set; }
         [Required,MaxLength(50)]
         public string name { get; set; }
 

@@ -165,7 +165,7 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<long?>("category_id")
+                    b.Property<long>("category_id")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("createdDate")
@@ -197,7 +197,7 @@ namespace MyApiNetCore8.Migrations
                     b.Property<int>("quantity")
                         .HasColumnType("int");
 
-                    b.Property<double?>("sale_price")
+                    b.Property<double>("sale_price")
                         .HasColumnType("double");
 
                     b.Property<string>("slug")
@@ -385,7 +385,9 @@ namespace MyApiNetCore8.Migrations
                 {
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("category_id");
+                        .HasForeignKey("category_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });

@@ -14,7 +14,7 @@ namespace MyApiNetCore8.Model
         [Required, MaxLength(50)]
         public string email { get; set; }
 
-        public string? note { get; set; }
+        public string note { get; set; }
         [Column(TypeName = "ENUM('PENDING', 'CONFIRMED', 'SHIPPING', 'DELIVERED', 'CANCELLED')")]
         public OrderStatus order_status { get; set; }
         [Required]

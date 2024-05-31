@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Reflection.Metadata;
 
 namespace MyApiNetCore8.Model
 {
@@ -8,7 +9,7 @@ namespace MyApiNetCore8.Model
         public MyContext(DbContextOptions<MyContext> options) : base(options)
         {
         }
- 
+
         #region DbSet
         public DbSet<Product> Product { get; set; }
         public DbSet<Category> Category { get; set; }
@@ -30,6 +31,7 @@ namespace MyApiNetCore8.Model
         //}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
             if (!optionsBuilder.IsConfigured)
             {
                 var connectionString = "Server=localhost; database=dotnetStore;user=root;password=;AllowZeroDateTime=True;";
@@ -38,20 +40,24 @@ namespace MyApiNetCore8.Model
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    modelBuilder.Entity(entityType.ClrType)
-                        .Property("CreatedDate")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                   
+                    modelBuilder.Entity<BaseEntity>()
+       .Property(b => b.CreatedDate)
+       .HasDefaultValueSql("SYSDATE()");
 
-                    modelBuilder.Entity(entityType.ClrType)
-                        .Property("ModifiedDate")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                    modelBuilder.Entity<BaseEntity>()
+       .Property(b => b.ModifiedDate)
+       .HasDefaultValueSql("SYSDATE()");
+
                 }
             }
+
 
         }
     }

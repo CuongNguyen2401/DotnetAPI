@@ -9,9 +9,11 @@ namespace MyApiNetCore8.Helper
     {
         public ApplicationMapper()
         {
-            CreateMap<Product, ProductResponse>().ReverseMap();
-            CreateMap<ProductRequest, Product>();
-
+            CreateMap<Product, ProductResponse>()
+                .ForMember(dest => dest.category, opt => opt.MapFrom(src => src.Category));
+            CreateMap<Category, CategoryResponse>();
+            //CreateMap<ProductRequest, Product>()
+            //    .ForMember(dest => dest.Category, opt => opt.Ignore());
         }
     }
 }

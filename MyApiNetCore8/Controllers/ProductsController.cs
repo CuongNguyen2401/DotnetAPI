@@ -25,7 +25,7 @@ namespace MyApiNetCore8.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> GetProduct()
         {
-            return new ApiResponse<List<ProductResponse>>(200, "Success", await _productRepository.GetAllProductsAsync());
+            return new ApiResponse<List<ProductResponse>>(1000, "Success", await _productRepository.GetAllProductsAsync());
 
         }
 
@@ -40,7 +40,7 @@ namespace MyApiNetCore8.Controllers
                 return NotFound();
             }
 
-            return new ApiResponse<ProductResponse>(200, "Success", product);
+            return new ApiResponse<ProductResponse>(1000, "Success", product);
         }
 
         // PUT: api/Products/5
@@ -53,16 +53,17 @@ namespace MyApiNetCore8.Controllers
             {
                 return NotFound();
             }
-            return Ok(new ApiResponse<ProductResponse>(200, "Success", productResponse));
+            return Ok(new ApiResponse<ProductResponse>(1000, "Success", productResponse));
         }
 
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(ProductRequest product)
+        public async Task<ActionResult<Product>> PostProduct([FromBody] ProductRequest product)
         {
+           
             var productResponse = await _productRepository.CreateProductAsync(product);
-            return CreatedAtAction("GetProduct", new ApiResponse<ProductResponse>(200, "Success", productResponse));
+            return CreatedAtAction("GetProduct", new ApiResponse<ProductResponse>(1000, "Success", productResponse));
 
         }
 
@@ -76,7 +77,7 @@ namespace MyApiNetCore8.Controllers
             {
                 return NotFound();
             }
-            return Ok(new ApiResponse<ProductResponse>(200, "Success", product));
+            return Ok(new ApiResponse<ProductResponse>(1000, "Success", product));
         }
 
         private bool ProductExists(long id)
