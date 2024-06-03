@@ -20,7 +20,7 @@ namespace MyApiNetCore8.Data
         public DbSet<Role> Role { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderItem> OrderItem { get; set; }
-        public DbSet<Coupon> Coupon { get; set; }
+        public DbSet<Coupon> Coupons { get; set; }
         #endregion
      
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

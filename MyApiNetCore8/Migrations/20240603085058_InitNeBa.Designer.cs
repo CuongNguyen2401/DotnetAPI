@@ -12,7 +12,7 @@ using MyApiNetCore8.Data;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240603071551_InitNeBa")]
+    [Migration("20240603085058_InitNeBa")]
     partial class InitNeBa
     {
         /// <inheritdoc />
@@ -101,7 +101,7 @@ namespace MyApiNetCore8.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Coupon");
+                    b.ToTable("Coupons");
                 });
 
             modelBuilder.Entity("MyApiNetCore8.Model.Order", b =>
@@ -234,9 +234,6 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("SYSDATE()");
 
-                    b.Property<long?>("Productid")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("category_id")
                         .HasColumnType("bigint");
 
@@ -268,8 +265,6 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("ENUM('ACTIVE', 'INACTIVE')");
 
                     b.HasKey("id");
-
-                    b.HasIndex("Productid");
 
                     b.HasIndex("category_id");
 
@@ -432,10 +427,6 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.Product", b =>
                 {
-                    b.HasOne("MyApiNetCore8.Model.Product", null)
-                        .WithMany("RelatedProducts")
-                        .HasForeignKey("Productid");
-
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("category_id")
@@ -496,8 +487,6 @@ namespace MyApiNetCore8.Migrations
                     b.Navigation("OrderItems");
 
                     b.Navigation("Ratings");
-
-                    b.Navigation("RelatedProducts");
                 });
 #pragma warning restore 612, 618
         }

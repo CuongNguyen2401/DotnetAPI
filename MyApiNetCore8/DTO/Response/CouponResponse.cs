@@ -4,10 +4,10 @@ namespace MyApiNetCore8.DTO.Response
 {
     public class CouponResponse : BaseEntity
     {
-        private string code;
+        public string Code { get; set; }
 
-        private double discount;
+        public double Discount { get; set; }
 
-        private DateTime expiryDate;
+        public DateTime ExpiryDate { get; set; }
     }
 }

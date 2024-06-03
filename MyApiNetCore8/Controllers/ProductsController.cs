@@ -72,13 +72,16 @@ namespace MyApiNetCore8.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(long id)
         {
-
             var product = await _productRepository.GetProductByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
+            
+                _productRepository.DeleteProduct(id);
+            
             return Ok(new ApiResponse<ProductResponse>(1000, "Success", product));
+            
         }
 
         private bool ProductExists(long id)

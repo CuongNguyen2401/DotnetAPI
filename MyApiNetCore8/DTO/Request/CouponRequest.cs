@@ -23,7 +23,7 @@ public class FutureDateAttribute : ValidationAttribute
             }
             else
             {
-                return new ValidationResult(ErrorMessage);
+                return new ValidationResult(ErrorMessage ?? "Expiry date must be in the future.");
             }
         }
 

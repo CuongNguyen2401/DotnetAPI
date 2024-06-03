@@ -41,7 +41,7 @@ namespace MyApiNetCore8.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Coupon",
+                name: "Coupons",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -59,7 +59,7 @@ namespace MyApiNetCore8.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Coupon", x => x.Id);
+                    table.PrimaryKey("PK_Coupons", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -163,7 +163,6 @@ namespace MyApiNetCore8.Migrations
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     category_id = table.Column<long>(type: "bigint", nullable: false),
-                    Productid = table.Column<long>(type: "bigint", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -180,11 +179,6 @@ namespace MyApiNetCore8.Migrations
                         principalTable: "Category",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Product_Product_Productid",
-                        column: x => x.Productid,
-                        principalTable: "Product",
-                        principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -301,11 +295,6 @@ namespace MyApiNetCore8.Migrations
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Product_Productid",
-                table: "Product",
-                column: "Productid");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Rating_product_id",
                 table: "Rating",
                 column: "product_id");
@@ -330,7 +319,7 @@ namespace MyApiNetCore8.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Coupon");
+                name: "Coupons");
 
             migrationBuilder.DropTable(
                 name: "OrderItem");

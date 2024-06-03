@@ -30,7 +30,10 @@ namespace MyApiNetCore8.Repository.impl
 
         public void DeleteProduct(long id)
         {
-            throw new NotImplementedException();
+            var product = _context.Product.Find(id);
+            _context.Product.Remove(product);
+            _context.SaveChanges();
+
         }
 
         public async Task<List<ProductResponse>> GetAllProductsAsync()
