@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using MyApiNetCore8.Model;
 using System.Reflection.Metadata;
 
-namespace MyApiNetCore8.Model
+namespace MyApiNetCore8.Data
 {
     public class MyContext : DbContext
     {
@@ -14,21 +14,15 @@ namespace MyApiNetCore8.Model
         public DbSet<Product> Product { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Rating> Rating { get; set; }
-        //public DbSet<Product> RelatedProduct { get; set; }
+
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
         public DbSet<Role> Role { get; set; }
-
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderItem> OrderItem { get; set; }
+        public DbSet<Coupon> Coupon { get; set; }
         #endregion
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
-
-
-
-        //    // Configure the Category entity if needed
-        //    // Add configurations for other entities as needed
-        //}
+     
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
@@ -46,19 +40,16 @@ namespace MyApiNetCore8.Model
             {
                 if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                   
-                    modelBuilder.Entity<BaseEntity>()
-       .Property(b => b.CreatedDate)
-       .HasDefaultValueSql("SYSDATE()");
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property("CreatedDate")
+                        .HasDefaultValueSql("SYSDATE()");
 
-                    modelBuilder.Entity<BaseEntity>()
-       .Property(b => b.ModifiedDate)
-       .HasDefaultValueSql("SYSDATE()");
-
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property("ModifiedDate")
+                        .HasDefaultValueSql("SYSDATE()");
                 }
             }
-
-
         }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using static MyApiNetCore8.Model.Product;
+﻿using MyApiNetCore8.Enums;
+using static MyApiNetCore8.Model.Product;
 
 namespace MyApiNetCore8.DTO.Request
 {

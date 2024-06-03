@@ -13,7 +13,11 @@ namespace MyApiNetCore8.Helper
         {
             CreateMap<Product, ProductResponse>()
                 .ForMember(dest => dest.category, opt => opt.MapFrom(src => src.Category));
-            CreateMap<Category, CategoryResponse>();
+            CreateMap<ProductRequest, Product>();
+
+            CreateMap<Category, CategoryRequest>().ReverseMap();
+            CreateMap<Category, CategoryResponse>().ReverseMap();
+
             CreateMap<Coupon, CouponResponse>();
 
         }

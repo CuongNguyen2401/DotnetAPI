@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace MyApiNetCore8.Model
 {
-    public class Product : BaseDTO
+    public class Product : BaseEntity
     {
         [Key]
         public long id { get; set; }
@@ -35,7 +35,7 @@ namespace MyApiNetCore8.Model
     
         public HashSet<Rating> Ratings { get; set; }
 
-        public HashSet<Product> RelatedProducts { get; set; }
+        //public HashSet<Product> RelatedProducts { get; set; }
        
     }
 }

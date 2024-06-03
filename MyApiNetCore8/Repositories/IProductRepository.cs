@@ -11,6 +11,7 @@ namespace MyApiNetCore8.Repository
         Task<ProductResponse> GetProductByIdAsync(long id);
         Task<ProductResponse> CreateProductAsync(ProductRequest product);
         Task<ProductResponse> UpdateProductAsync(long id, ProductRequest product);
+        void DeleteProduct(long id);
 
 
     }

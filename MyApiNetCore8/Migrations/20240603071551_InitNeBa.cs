@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyApiNetCore8.Migrations
 {
     /// <inheritdoc />
-    public partial class dbinit : Migration
+    public partial class InitNeBa : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,16 +27,39 @@ namespace MyApiNetCore8.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     status = table.Column<string>(type: "ENUM('ACTIVE', 'INACTIVE')", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_by = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    modifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    modifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Coupon",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Discount = table.Column<double>(type: "double", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Coupon", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -59,12 +82,12 @@ namespace MyApiNetCore8.Migrations
                     phone_number = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     total_pay = table.Column<double>(type: "double", nullable: false),
-                    created_by = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    modifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    modifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
                 },
                 constraints: table =>
                 {
@@ -107,12 +130,12 @@ namespace MyApiNetCore8.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     username = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_by = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    modifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    modifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
                 },
                 constraints: table =>
                 {
@@ -140,12 +163,13 @@ namespace MyApiNetCore8.Migrations
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     category_id = table.Column<long>(type: "bigint", nullable: false),
-                    created_by = table.Column<string>(type: "longtext", nullable: true)
+                    Productid = table.Column<long>(type: "bigint", nullable: true),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    modifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    modifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
                 },
                 constraints: table =>
                 {
@@ -156,6 +180,11 @@ namespace MyApiNetCore8.Migrations
                         principalTable: "Category",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Product_Product_Productid",
+                        column: x => x.Productid,
+                        principalTable: "Product",
+                        principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -198,12 +227,12 @@ namespace MyApiNetCore8.Migrations
                     order_id = table.Column<long>(type: "bigint", nullable: false),
                     product_id = table.Column<long>(type: "bigint", nullable: false),
                     Productid = table.Column<long>(type: "bigint", nullable: true),
-                    created_by = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    modifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    modifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
                 },
                 constraints: table =>
                 {
@@ -231,12 +260,12 @@ namespace MyApiNetCore8.Migrations
                     rate = table.Column<int>(type: "int", nullable: false),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     product_id = table.Column<long>(type: "bigint", nullable: false),
-                    created_by = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    createdDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    modifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    modifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
                 },
                 constraints: table =>
                 {
@@ -251,27 +280,6 @@ namespace MyApiNetCore8.Migrations
                         name: "FK_Rating_User_user_id",
                         column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "RelatedProduct",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    product_id = table.Column<long>(type: "bigint", nullable: false),
-                    related_product_id = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RelatedProduct", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_RelatedProduct_Product_product_id",
-                        column: x => x.product_id,
-                        principalTable: "Product",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -293,6 +301,11 @@ namespace MyApiNetCore8.Migrations
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Product_Productid",
+                table: "Product",
+                column: "Productid");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Rating_product_id",
                 table: "Rating",
                 column: "product_id");
@@ -301,11 +314,6 @@ namespace MyApiNetCore8.Migrations
                 name: "IX_Rating_user_id",
                 table: "Rating",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RelatedProduct_product_id",
-                table: "RelatedProduct",
-                column: "product_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRole_Roleid",
@@ -322,13 +330,13 @@ namespace MyApiNetCore8.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Coupon");
+
+            migrationBuilder.DropTable(
                 name: "OrderItem");
 
             migrationBuilder.DropTable(
                 name: "Rating");
-
-            migrationBuilder.DropTable(
-                name: "RelatedProduct");
 
             migrationBuilder.DropTable(
                 name: "UserRole");

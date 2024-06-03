@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyApiNetCore8.Model
 {
-    public class Rating : BaseDTO
+    public class Rating : BaseEntity
     {
         [Key]
         public int id { get; set; }

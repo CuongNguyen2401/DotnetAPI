@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApiNetCore8.Data;
 using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Model;
@@ -21,11 +22,15 @@ namespace MyApiNetCore8.Repository.impl
         public async Task<ProductResponse> CreateProductAsync(ProductRequest product)
         {
             var productEntity = _mapper.Map<Product>(product);
-            productEntity.createdDate = DateTime.UtcNow;
-            productEntity.modifiedDate = DateTime.UtcNow;
+
             _context.Product.Add(productEntity);
             await _context.SaveChangesAsync();
             return _mapper.Map<ProductResponse>(productEntity);
+        }
+
+        public void DeleteProduct(long id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<ProductResponse>> GetAllProductsAsync()

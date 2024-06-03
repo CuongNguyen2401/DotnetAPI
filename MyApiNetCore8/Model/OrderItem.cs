@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyApiNetCore8.Model
 {
-    public class OrderItem : BaseDTO
+    public class OrderItem : BaseEntity
     {
         [Key]
         public long id { get; set; }

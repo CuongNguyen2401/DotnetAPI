@@ -1,6 +1,8 @@
-﻿namespace MyApiNetCore8.DTO.Response
+﻿using MyApiNetCore8.Model;
+
+namespace MyApiNetCore8.DTO.Response
 {
-    public class CouponResponse
+    public class CouponResponse : BaseEntity
     {
         private string code;
 

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using MyApiNetCore8.Model;
+using MyApiNetCore8.Data;
 using MyApiNetCore8.Repository;
 using MyApiNetCore8.Repository.impl;
 

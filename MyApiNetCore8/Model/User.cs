@@ -1,6 +1,6 @@
 ﻿namespace MyApiNetCore8.Model
 {
-    public class User : BaseDTO
+    public class User : BaseEntity
     {
         public long id { get; set; }
         public DateTime date_of_birth { get; set; }

@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MyApiNetCore8.Data;
 using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Model;

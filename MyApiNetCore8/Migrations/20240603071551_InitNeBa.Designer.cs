@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MyApiNetCore8.Model;
+using MyApiNetCore8.Data;
 
 #nullable disable
 
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240529014855_db-init")]
-    partial class dbinit
+    [Migration("20240603071551_InitNeBa")]
+    partial class InitNeBa
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,20 +33,24 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("created_by")
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
 
                     b.Property<string>("description")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("modifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -62,6 +66,44 @@ namespace MyApiNetCore8.Migrations
                     b.ToTable("Category");
                 });
 
+            modelBuilder.Entity("MyApiNetCore8.Model.Coupon", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<double>("Discount")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coupon");
+                });
+
             modelBuilder.Entity("MyApiNetCore8.Model.Order", b =>
                 {
                     b.Property<long>("id")
@@ -70,16 +112,26 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
                     b.Property<string>("address")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
-
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("created_by")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("customer_name")
                         .IsRequired()
@@ -90,12 +142,6 @@ namespace MyApiNetCore8.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
-
-                    b.Property<string>("modifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("note")
                         .HasColumnType("longtext");
@@ -124,20 +170,24 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
                     b.Property<long?>("Productid")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("created_by")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("modifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<long>("order_id")
                         .HasColumnType("bigint");
@@ -168,26 +218,33 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<long>("category_id")
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<long?>("Productid")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("created_by")
-                        .HasColumnType("longtext");
+                    b.Property<long>("category_id")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("description")
                         .HasColumnType("longtext");
 
                     b.Property<string>("image")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("modifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -212,6 +269,8 @@ namespace MyApiNetCore8.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("Productid");
+
                     b.HasIndex("category_id");
 
                     b.ToTable("Product");
@@ -225,17 +284,21 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("created_by")
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("modifiedBy")
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<string>("ModifiedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
 
                     b.Property<long>("product_id")
                         .HasColumnType("bigint");
@@ -253,27 +316,6 @@ namespace MyApiNetCore8.Migrations
                     b.HasIndex("user_id");
 
                     b.ToTable("Rating");
-                });
-
-            modelBuilder.Entity("MyApiNetCore8.Model.RelatedProduct", b =>
-                {
-                    b.Property<long>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
-
-                    b.Property<long>("product_id")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("related_product_id")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("product_id");
-
-                    b.ToTable("RelatedProduct");
                 });
 
             modelBuilder.Entity("MyApiNetCore8.Model.Role", b =>
@@ -303,11 +345,21 @@ namespace MyApiNetCore8.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("created_by")
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("SYSDATE()");
 
                     b.Property<DateTime>("date_of_birth")
                         .HasColumnType("datetime(6)");
@@ -320,12 +372,6 @@ namespace MyApiNetCore8.Migrations
 
                     b.Property<string>("last_name")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("modifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("password")
                         .HasColumnType("longtext");
@@ -386,6 +432,10 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.Product", b =>
                 {
+                    b.HasOne("MyApiNetCore8.Model.Product", null)
+                        .WithMany("RelatedProducts")
+                        .HasForeignKey("Productid");
+
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("category_id")
@@ -412,17 +462,6 @@ namespace MyApiNetCore8.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MyApiNetCore8.Model.RelatedProduct", b =>
-                {
-                    b.HasOne("MyApiNetCore8.Model.Product", "Product")
-                        .WithMany("RelatedProducts")
-                        .HasForeignKey("product_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("MyApiNetCore8.Model.UserRole", b =>

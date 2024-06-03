@@ -1,10 +1,11 @@
-﻿using MyApiNetCore8.Model;
+﻿using MyApiNetCore8.Enums;
+using MyApiNetCore8.Model;
 using System.Text.Json.Serialization;
 using static MyApiNetCore8.Model.Product;
 
 namespace MyApiNetCore8.DTO.Response
 {
-    public class ProductResponse : BaseDTO
+    public class ProductResponse : BaseEntity
     {
         [JsonPropertyName("id")]
         public long id { get; set; }
@@ -14,11 +15,13 @@ namespace MyApiNetCore8.DTO.Response
         public double sale_price { get; set; }
         public string image { get; set; }
         public int stock { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Status status { get; set; } = Status.ACTIVE;
-        
-  
+
+
         public CategoryResponse category { get; set; }
-        
+
 
     }
 }

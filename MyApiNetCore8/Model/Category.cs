@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MyApiNetCore8.Model
 {
   
-public class Category : BaseDTO
+public class Category : BaseEntity
     {
         [Key]
         public long id { get; set; }

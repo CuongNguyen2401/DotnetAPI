@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.Model;
+using MyApiNetCore8.Data;
 
 
 
