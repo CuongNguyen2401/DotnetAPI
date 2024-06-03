@@ -21,8 +21,11 @@ namespace MyApiNetCore8.Data
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderItem> OrderItem { get; set; }
         public DbSet<Coupon> Coupon { get; set; }
+
+        public DbSet<Permission> Permission { get; set; }
+        public DbSet<RolePermission> RolePermission { get; set; }
         #endregion
-     
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
@@ -49,6 +52,11 @@ namespace MyApiNetCore8.Data
                         .HasDefaultValueSql("SYSDATE()");
                 }
             }
+
+            modelBuilder.Entity<UserRole>()
+                .HasKey(c => new { c.user_id, c.roles_name });
+            modelBuilder.Entity<RolePermission>()
+                .HasKey(c => new { c.permissions_name, c.roles_name });
         }
 
     }

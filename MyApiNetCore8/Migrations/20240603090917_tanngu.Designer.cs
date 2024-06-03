@@ -12,8 +12,8 @@ using MyApiNetCore8.Data;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240603071551_InitNeBa")]
-    partial class InitNeBa
+    [Migration("20240603090917_tanngu")]
+    partial class tanngu
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -210,6 +210,19 @@ namespace MyApiNetCore8.Migrations
                     b.ToTable("OrderItem");
                 });
 
+            modelBuilder.Entity("MyApiNetCore8.Model.Permission", b =>
+                {
+                    b.Property<string>("name")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("description")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("name");
+
+                    b.ToTable("Permission");
+                });
+
             modelBuilder.Entity("MyApiNetCore8.Model.Product", b =>
                 {
                     b.Property<long>("id")
@@ -233,9 +246,6 @@ namespace MyApiNetCore8.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("SYSDATE()");
-
-                    b.Property<long?>("Productid")
-                        .HasColumnType("bigint");
 
                     b.Property<long>("category_id")
                         .HasColumnType("bigint");
@@ -268,8 +278,6 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("ENUM('ACTIVE', 'INACTIVE')");
 
                     b.HasKey("id");
-
-                    b.HasIndex("Productid");
 
                     b.HasIndex("category_id");
 
@@ -320,19 +328,13 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.Role", b =>
                 {
-                    b.Property<long>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
+                    b.Property<string>("name")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("description")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("name")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("id");
+                    b.HasKey("name");
 
                     b.ToTable("Role");
                 });
@@ -389,26 +391,15 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.UserRole", b =>
                 {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<long?>("Roleid")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("roles_name")
-                        .HasColumnType("longtext");
-
                     b.Property<long>("user_id")
                         .HasColumnType("bigint");
 
-                    b.HasKey("id");
+                    b.Property<string>("roles_name")
+                        .HasColumnType("varchar(255)");
 
-                    b.HasIndex("Roleid");
+                    b.HasKey("user_id", "roles_name");
 
-                    b.HasIndex("user_id");
+                    b.HasIndex("roles_name");
 
                     b.ToTable("UserRole");
                 });
@@ -432,10 +423,6 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.Product", b =>
                 {
-                    b.HasOne("MyApiNetCore8.Model.Product", null)
-                        .WithMany("RelatedProducts")
-                        .HasForeignKey("Productid");
-
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("category_id")
@@ -468,7 +455,9 @@ namespace MyApiNetCore8.Migrations
                 {
                     b.HasOne("MyApiNetCore8.Model.Role", "Role")
                         .WithMany()
-                        .HasForeignKey("Roleid");
+                        .HasForeignKey("roles_name")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("MyApiNetCore8.Model.User", "User")
                         .WithMany()
@@ -496,8 +485,6 @@ namespace MyApiNetCore8.Migrations
                     b.Navigation("OrderItems");
 
                     b.Navigation("Ratings");
-
-                    b.Navigation("RelatedProducts");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyApiNetCore8.Migrations
 {
     /// <inheritdoc />
-    public partial class InitNeBa : Migration
+    public partial class tanngu : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -96,19 +96,32 @@ namespace MyApiNetCore8.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Role",
+                name: "Permission",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    name = table.Column<string>(type: "longtext", nullable: true)
+                    name = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     description = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.id);
+                    table.PrimaryKey("PK_Permission", x => x.name);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Role",
+                columns: table => new
+                {
+                    name = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    description = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Role", x => x.name);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -163,7 +176,6 @@ namespace MyApiNetCore8.Migrations
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     category_id = table.Column<long>(type: "bigint", nullable: false),
-                    Productid = table.Column<long>(type: "bigint", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -180,11 +192,6 @@ namespace MyApiNetCore8.Migrations
                         principalTable: "Category",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Product_Product_Productid",
-                        column: x => x.Productid,
-                        principalTable: "Product",
-                        principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -192,21 +199,19 @@ namespace MyApiNetCore8.Migrations
                 name: "UserRole",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
-                    roles_name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Roleid = table.Column<long>(type: "bigint", nullable: true)
+                    roles_name = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => x.id);
+                    table.PrimaryKey("PK_UserRole", x => new { x.user_id, x.roles_name });
                     table.ForeignKey(
-                        name: "FK_UserRole_Role_Roleid",
-                        column: x => x.Roleid,
+                        name: "FK_UserRole_Role_roles_name",
+                        column: x => x.roles_name,
                         principalTable: "Role",
-                        principalColumn: "id");
+                        principalColumn: "name",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserRole_User_user_id",
                         column: x => x.user_id,
@@ -301,11 +306,6 @@ namespace MyApiNetCore8.Migrations
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Product_Productid",
-                table: "Product",
-                column: "Productid");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Rating_product_id",
                 table: "Rating",
                 column: "product_id");
@@ -316,14 +316,9 @@ namespace MyApiNetCore8.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_Roleid",
+                name: "IX_UserRole_roles_name",
                 table: "UserRole",
-                column: "Roleid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_user_id",
-                table: "UserRole",
-                column: "user_id");
+                column: "roles_name");
         }
 
         /// <inheritdoc />
@@ -334,6 +329,9 @@ namespace MyApiNetCore8.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderItem");
+
+            migrationBuilder.DropTable(
+                name: "Permission");
 
             migrationBuilder.DropTable(
                 name: "Rating");

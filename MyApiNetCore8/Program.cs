@@ -19,8 +19,10 @@ builder.Services.AddDbContext<MyContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("dotnetStore"), new MySqlServerVersion(new Version(8, 0, 26)));
 });
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddScoped<IProductRepository,ProductRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
