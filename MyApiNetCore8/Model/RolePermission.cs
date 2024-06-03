@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
 
 namespace MyApiNetCore8.Model
 {
-    public class UserRole
+    public class RolePermission
     {
-        public long user_id { get; set; }
-        [ForeignKey("user_id")]
-        public User User { get; set; }
         public string roles_name { get; set; }
         [ForeignKey("roles_name")]
         public Role Role { get; set; }
+        public string permissions_name { get; set; }
+        [ForeignKey("permissions_name")]
+        public Permission Permission { get; set; }
     }
 }
