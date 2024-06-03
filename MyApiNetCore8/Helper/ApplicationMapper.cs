@@ -15,10 +15,11 @@ namespace MyApiNetCore8.Helper
                 .ForMember(dest => dest.category, opt => opt.MapFrom(src => src.Category));
             CreateMap<ProductRequest, Product>();
 
-            CreateMap<Category, CategoryRequest>().ReverseMap();
+            CreateMap<CategoryRequest, Category>().ReverseMap();
             CreateMap<Category, CategoryResponse>().ReverseMap();
 
-            CreateMap<Coupon, CouponResponse>();
+            CreateMap<Coupon, CouponResponse>().ReverseMap();
+            CreateMap<CouponRequest, Coupon>().ReverseMap();
 
             CreateMap<Permission, PermissionRequest>().ReverseMap();
             CreateMap<Permission, PermissionResponse>().ReverseMap();

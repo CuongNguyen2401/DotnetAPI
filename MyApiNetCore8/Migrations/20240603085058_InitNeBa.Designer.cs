@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApiNetCore8.Data;
 
@@ -11,9 +12,11 @@ using MyApiNetCore8.Data;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20240603085058_InitNeBa")]
+    partial class InitNeBa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -207,19 +210,6 @@ namespace MyApiNetCore8.Migrations
                     b.ToTable("OrderItem");
                 });
 
-            modelBuilder.Entity("MyApiNetCore8.Model.Permission", b =>
-                {
-                    b.Property<string>("name")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("description")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("name");
-
-                    b.ToTable("Permission");
-                });
-
             modelBuilder.Entity("MyApiNetCore8.Model.Product", b =>
                 {
                     b.Property<long>("id")
@@ -325,30 +315,21 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.Role", b =>
                 {
-                    b.Property<string>("name")
-                        .HasColumnType("varchar(255)");
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
                     b.Property<string>("description")
                         .HasColumnType("longtext");
 
-                    b.HasKey("name");
+                    b.Property<string>("name")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("id");
 
                     b.ToTable("Role");
-                });
-
-            modelBuilder.Entity("MyApiNetCore8.Model.RolePermission", b =>
-                {
-                    b.Property<string>("permissions_name")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("roles_name")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("permissions_name", "roles_name");
-
-                    b.HasIndex("roles_name");
-
-                    b.ToTable("RolePermission");
                 });
 
             modelBuilder.Entity("MyApiNetCore8.Model.User", b =>
@@ -403,15 +384,26 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.UserRole", b =>
                 {
-                    b.Property<long>("user_id")
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<long?>("Roleid")
                         .HasColumnType("bigint");
 
                     b.Property<string>("roles_name")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
-                    b.HasKey("user_id", "roles_name");
+                    b.Property<long>("user_id")
+                        .HasColumnType("bigint");
 
-                    b.HasIndex("roles_name");
+                    b.HasKey("id");
+
+                    b.HasIndex("Roleid");
+
+                    b.HasIndex("user_id");
 
                     b.ToTable("UserRole");
                 });
@@ -463,32 +455,11 @@ namespace MyApiNetCore8.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MyApiNetCore8.Model.RolePermission", b =>
-                {
-                    b.HasOne("MyApiNetCore8.Model.Permission", "Permission")
-                        .WithMany()
-                        .HasForeignKey("permissions_name")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MyApiNetCore8.Model.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("roles_name")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("MyApiNetCore8.Model.UserRole", b =>
                 {
                     b.HasOne("MyApiNetCore8.Model.Role", "Role")
                         .WithMany()
-                        .HasForeignKey("roles_name")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Roleid");
 
                     b.HasOne("MyApiNetCore8.Model.User", "User")
                         .WithMany()

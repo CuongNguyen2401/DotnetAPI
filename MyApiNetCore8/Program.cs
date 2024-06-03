@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MyApiNetCore8.Data;
+using MyApiNetCore8.Repositories;
+using MyApiNetCore8.Repositories.impl;
 using MyApiNetCore8.Repository;
 using MyApiNetCore8.Repository.impl;
 
@@ -22,6 +24,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 
 var app = builder.Build();
 
