@@ -12,8 +12,8 @@ using MyApiNetCore8.Data;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240603090917_tanngu")]
-    partial class tanngu
+    [Migration("20240603092535_InitNeTan")]
+    partial class InitNeTan
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,7 +101,7 @@ namespace MyApiNetCore8.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Coupon");
+                    b.ToTable("Coupons");
                 });
 
             modelBuilder.Entity("MyApiNetCore8.Model.Order", b =>
@@ -339,6 +339,21 @@ namespace MyApiNetCore8.Migrations
                     b.ToTable("Role");
                 });
 
+            modelBuilder.Entity("MyApiNetCore8.Model.RolePermission", b =>
+                {
+                    b.Property<string>("permissions_name")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("roles_name")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("permissions_name", "roles_name");
+
+                    b.HasIndex("roles_name");
+
+                    b.ToTable("RolePermission");
+                });
+
             modelBuilder.Entity("MyApiNetCore8.Model.User", b =>
                 {
                     b.Property<long>("id")
@@ -449,6 +464,25 @@ namespace MyApiNetCore8.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MyApiNetCore8.Model.RolePermission", b =>
+                {
+                    b.HasOne("MyApiNetCore8.Model.Permission", "Permission")
+                        .WithMany()
+                        .HasForeignKey("permissions_name")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyApiNetCore8.Model.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("roles_name")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("MyApiNetCore8.Model.UserRole", b =>

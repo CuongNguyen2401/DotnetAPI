@@ -244,7 +244,7 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("SYSDATE()");
 
-                    b.Property<long>("category_id")
+                    b.Property<long?>("category_id")
                         .HasColumnType("bigint");
 
                     b.Property<string>("description")
@@ -437,9 +437,7 @@ namespace MyApiNetCore8.Migrations
                 {
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("category_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("category_id");
 
                     b.Navigation("Category");
                 });

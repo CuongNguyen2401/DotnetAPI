@@ -12,8 +12,8 @@ using MyApiNetCore8.Data;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240603091429_tanngune")]
-    partial class tanngune
+    [Migration("20240603154652_CateCanNull")]
+    partial class CateCanNull
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,7 +101,7 @@ namespace MyApiNetCore8.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Coupon");
+                    b.ToTable("Coupons");
                 });
 
             modelBuilder.Entity("MyApiNetCore8.Model.Order", b =>
@@ -247,7 +247,7 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("SYSDATE()");
 
-                    b.Property<long>("category_id")
+                    b.Property<long?>("category_id")
                         .HasColumnType("bigint");
 
                     b.Property<string>("description")
@@ -440,9 +440,7 @@ namespace MyApiNetCore8.Migrations
                 {
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("category_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("category_id");
 
                     b.Navigation("Category");
                 });

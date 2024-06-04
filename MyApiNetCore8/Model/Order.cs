@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MyApiNetCore8.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyApiNetCore8.Model
@@ -21,10 +22,11 @@ namespace MyApiNetCore8.Model
         public string phone_number { get; set; }
         [Required]
         public double total_pay { get; set; }
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public List<OrderItem> OrderItems { get; set; }
+
+        [ForeignKey("user_id")]
+        public User User { get; set; }
+        public long user_id { get; set; }
     }
-    public enum OrderStatus
-    {
-        PENDING, CONFIRMED, SHIPPING, DELIVERED, CANCELLED
-    }
+   
 }

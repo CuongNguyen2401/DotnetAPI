@@ -44,19 +44,6 @@ namespace MyApiNetCore8.Controllers
             return Ok(new ApiResponse<CouponResponse>(1000, "Success", coupon));
         }
 
-        // PUT: api/Coupons/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCoupon(long id, CouponRequest coupon)
-        {
-            var couponResponse = await _repository.UpdateCoupon(id, coupon);
-            if (couponResponse == null)
-            {
-                return NotFound();
-            }
-            return Ok(new ApiResponse<CouponResponse>(1000, "Success", couponResponse));
-
-        }
 
         // POST: api/Coupons
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

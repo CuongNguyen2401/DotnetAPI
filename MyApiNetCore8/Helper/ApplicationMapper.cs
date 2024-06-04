@@ -12,8 +12,8 @@ namespace MyApiNetCore8.Helper
         public ApplicationMapper()
         {
             CreateMap<Product, ProductResponse>()
-                .ForMember(dest => dest.category, opt => opt.MapFrom(src => src.Category));
-            CreateMap<ProductRequest, Product>();
+                .ForMember(dest => dest.category, opt => opt.MapFrom(src => src.Category)).ReverseMap();
+            CreateMap<ProductRequest, Product>().ReverseMap();
 
             CreateMap<CategoryRequest, Category>().ReverseMap();
             CreateMap<Category, CategoryResponse>().ReverseMap();

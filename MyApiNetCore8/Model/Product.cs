@@ -27,9 +27,8 @@ namespace MyApiNetCore8.Model
         public int quantity { get; set; }
         public double sale_price { get; set; }
         public string slug { get; set; }
-        public long category_id { get; set; }
+        public long? category_id { get; set; }
         [ForeignKey("category_id")]
-
         public Category Category { get; set; }
         public HashSet<OrderItem> OrderItems { get; set; }
     

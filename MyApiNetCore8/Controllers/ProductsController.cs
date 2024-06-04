@@ -1,4 +1,6 @@
 ﻿
+using CloudinaryDotNet.Actions;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyApiNetCore8.Data;
@@ -6,6 +8,8 @@ using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Model;
 using MyApiNetCore8.Repository;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace MyApiNetCore8.Controllers
 {
@@ -15,11 +19,13 @@ namespace MyApiNetCore8.Controllers
     {
 
         private readonly IProductRepository _productRepository;
+        private readonly Cloudinary _cloudinary;
 
-        public ProductsController(MyContext context, IProductRepository productRepository)
+
+        public ProductsController(IProductRepository productRepository, Cloudinary cloudinary)
         {
-
             _productRepository = productRepository;
+            _cloudinary = cloudinary;
         }
 
         // GET: api/Products
@@ -46,10 +52,10 @@ namespace MyApiNetCore8.Controllers
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(long id, ProductRequest product)
+        [HttpPut]
+        public async Task<IActionResult> PutProduct( ProductRequest product)
         {
-            var productResponse = await _productRepository.UpdateProductAsync(id, product);
+            var productResponse = await _productRepository.UpdateProductAsync(product);
             if (productResponse == null)
             {
                 return NotFound();
@@ -60,13 +66,28 @@ namespace MyApiNetCore8.Controllers
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct([FromBody] ProductRequest product)
+        public async Task<ActionResult<ProductResponse>> PostProduct([FromForm] ProductRequest productRequest)
         {
-           
-            var productResponse = await _productRepository.CreateProductAsync(product);
-            return CreatedAtAction("GetProduct", new ApiResponse<ProductResponse>(1000, "Success", productResponse));
+            if (productRequest == null)
+            {
+                return BadRequest("Product request is null.");
+            }
 
+            try
+            {
+                var productResponse = await _productRepository.CreateProductAsync(productRequest);
+                return CreatedAtAction("GetProduct", new { id = productResponse.id }, new ApiResponse<ProductResponse>(1000, "Success", productResponse));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error creating product: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
+
+
+
+
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
@@ -77,11 +98,11 @@ namespace MyApiNetCore8.Controllers
             {
                 return NotFound();
             }
-            
-                _productRepository.DeleteProduct(id);
-            
+
+            _productRepository.DeleteProduct(id);
+
             return Ok(new ApiResponse<ProductResponse>(1000, "Success", product));
-            
+
         }
 
         private bool ProductExists(long id)

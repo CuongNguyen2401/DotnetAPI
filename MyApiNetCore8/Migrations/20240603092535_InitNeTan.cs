@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyApiNetCore8.Migrations
 {
     /// <inheritdoc />
-    public partial class tanngu : Migration
+    public partial class InitNeTan : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,7 +41,7 @@ namespace MyApiNetCore8.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Coupon",
+                name: "Coupons",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -59,7 +59,7 @@ namespace MyApiNetCore8.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Coupon", x => x.Id);
+                    table.PrimaryKey("PK_Coupons", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -196,6 +196,33 @@ namespace MyApiNetCore8.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "RolePermission",
+                columns: table => new
+                {
+                    roles_name = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    permissions_name = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RolePermission", x => new { x.permissions_name, x.roles_name });
+                    table.ForeignKey(
+                        name: "FK_RolePermission_Permission_permissions_name",
+                        column: x => x.permissions_name,
+                        principalTable: "Permission",
+                        principalColumn: "name",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RolePermission_Role_roles_name",
+                        column: x => x.roles_name,
+                        principalTable: "Role",
+                        principalColumn: "name",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "UserRole",
                 columns: table => new
                 {
@@ -316,6 +343,11 @@ namespace MyApiNetCore8.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RolePermission_roles_name",
+                table: "RolePermission",
+                column: "roles_name");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserRole_roles_name",
                 table: "UserRole",
                 column: "roles_name");
@@ -325,16 +357,16 @@ namespace MyApiNetCore8.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Coupon");
+                name: "Coupons");
 
             migrationBuilder.DropTable(
                 name: "OrderItem");
 
             migrationBuilder.DropTable(
-                name: "Permission");
+                name: "Rating");
 
             migrationBuilder.DropTable(
-                name: "Rating");
+                name: "RolePermission");
 
             migrationBuilder.DropTable(
                 name: "UserRole");
@@ -344,6 +376,9 @@ namespace MyApiNetCore8.Migrations
 
             migrationBuilder.DropTable(
                 name: "Product");
+
+            migrationBuilder.DropTable(
+                name: "Permission");
 
             migrationBuilder.DropTable(
                 name: "Role");
