@@ -21,8 +21,6 @@ namespace MyApiNetCore8.Helper
             CreateMap<Coupon, CouponResponse>().ReverseMap();
             CreateMap<CouponRequest, Coupon>().ReverseMap();
 
-            CreateMap<Permission, PermissionRequest>().ReverseMap();
-            CreateMap<Permission, PermissionResponse>().ReverseMap();
         }
     }
 }

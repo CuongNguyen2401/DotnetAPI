@@ -10,6 +10,7 @@ using MyApiNetCore8.Model;
 using MyApiNetCore8.Repository;
 using System.Text;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyApiNetCore8.Controllers
 {
@@ -53,6 +54,7 @@ namespace MyApiNetCore8.Controllers
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> PutProduct( ProductRequest product)
         {
             var productResponse = await _productRepository.UpdateProductAsync(product);
@@ -66,6 +68,7 @@ namespace MyApiNetCore8.Controllers
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ProductResponse>> PostProduct([FromForm] ProductRequest productRequest)
         {
             if (productRequest == null)
@@ -91,6 +94,7 @@ namespace MyApiNetCore8.Controllers
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteProduct(long id)
         {
             var product = await _productRepository.GetProductByIdAsync(id);

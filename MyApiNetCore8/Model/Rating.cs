@@ -11,7 +11,7 @@ namespace MyApiNetCore8.Model
 
         [Range(1, 5)]
         public int rate { get; set; }
-        public long user_id { get; set; }
+        public string user_id { get; set; }
         [ForeignKey("user_id")]
         public User User { get; set; }
         public long product_id { get; set; }

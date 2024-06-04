@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using MyApiNetCore8.Model;
 using System.Reflection.Metadata;
 
 namespace MyApiNetCore8.Data
 {
-    public class MyContext : DbContext
+    public class MyContext : IdentityDbContext<User>
     {
         public MyContext(DbContextOptions<MyContext> options) : base(options)
         {
@@ -16,14 +18,12 @@ namespace MyApiNetCore8.Data
         public DbSet<Rating> Rating { get; set; }
 
         public DbSet<User> User { get; set; }
-        public DbSet<UserRole> UserRole { get; set; }
-        public DbSet<Role> Role { get; set; }
+        //public DbSet<UserRole> UserRole { get; set; }
+        //public DbSet<Role> Role { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderItem> OrderItem { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
 
-        public DbSet<Permission> Permission { get; set; }
-        public DbSet<RolePermission> RolePermission { get; set; }
         #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -53,10 +53,6 @@ namespace MyApiNetCore8.Data
                 }
             }
 
-            modelBuilder.Entity<UserRole>()
-                .HasKey(c => new { c.user_id, c.roles_name });
-            modelBuilder.Entity<RolePermission>()
-                .HasKey(c => new { c.permissions_name, c.roles_name });
         }
 
     }

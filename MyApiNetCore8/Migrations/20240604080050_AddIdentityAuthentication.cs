@@ -7,12 +7,66 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyApiNetCore8.Migrations
 {
     /// <inheritdoc />
-    public partial class InitNeTan : Migration
+    public partial class AddIdentityAuthentication : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SecurityStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -64,6 +118,133 @@ namespace MyApiNetCore8.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Value = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Order",
                 columns: table => new
                 {
@@ -82,6 +263,8 @@ namespace MyApiNetCore8.Migrations
                     phone_number = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     total_pay = table.Column<double>(type: "double", nullable: false),
+                    user_id = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -92,67 +275,11 @@ namespace MyApiNetCore8.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Order", x => x.id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Permission",
-                columns: table => new
-                {
-                    name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    description = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Permission", x => x.name);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Role",
-                columns: table => new
-                {
-                    name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    description = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Role", x => x.name);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    date_of_birth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    first_name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    gender = table.Column<int>(type: "int", nullable: false),
-                    last_name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    password = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    phone_number = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    username = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
-                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Order_AspNetUsers_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -175,7 +302,7 @@ namespace MyApiNetCore8.Migrations
                     sale_price = table.Column<double>(type: "double", nullable: false),
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    category_id = table.Column<long>(type: "bigint", nullable: false),
+                    category_id = table.Column<long>(type: "bigint", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -190,61 +317,7 @@ namespace MyApiNetCore8.Migrations
                         name: "FK_Product_Category_category_id",
                         column: x => x.category_id,
                         principalTable: "Category",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "RolePermission",
-                columns: table => new
-                {
-                    roles_name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    permissions_name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RolePermission", x => new { x.permissions_name, x.roles_name });
-                    table.ForeignKey(
-                        name: "FK_RolePermission_Permission_permissions_name",
-                        column: x => x.permissions_name,
-                        principalTable: "Permission",
-                        principalColumn: "name",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RolePermission_Role_roles_name",
-                        column: x => x.roles_name,
-                        principalTable: "Role",
-                        principalColumn: "name",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "UserRole",
-                columns: table => new
-                {
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
-                    roles_name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRole", x => new { x.user_id, x.roles_name });
-                    table.ForeignKey(
-                        name: "FK_UserRole_Role_roles_name",
-                        column: x => x.roles_name,
-                        principalTable: "Role",
-                        principalColumn: "name",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRole_User_user_id",
-                        column: x => x.user_id,
-                        principalTable: "User",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -258,7 +331,6 @@ namespace MyApiNetCore8.Migrations
                     quantity = table.Column<int>(type: "int", nullable: false),
                     order_id = table.Column<long>(type: "bigint", nullable: false),
                     product_id = table.Column<long>(type: "bigint", nullable: false),
-                    Productid = table.Column<long>(type: "bigint", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -276,10 +348,11 @@ namespace MyApiNetCore8.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItem_Product_Productid",
-                        column: x => x.Productid,
+                        name: "FK_OrderItem_Product_product_id",
+                        column: x => x.product_id,
                         principalTable: "Product",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -290,7 +363,8 @@ namespace MyApiNetCore8.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     rate = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    user_id = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     product_id = table.Column<long>(type: "bigint", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -303,19 +377,60 @@ namespace MyApiNetCore8.Migrations
                 {
                     table.PrimaryKey("PK_Rating", x => x.id);
                     table.ForeignKey(
+                        name: "FK_Rating_AspNetUsers_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Rating_Product_product_id",
                         column: x => x.product_id,
                         principalTable: "Product",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Rating_User_user_id",
-                        column: x => x.user_id,
-                        principalTable: "User",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_user_id",
+                table: "Order",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_order_id",
@@ -323,9 +438,9 @@ namespace MyApiNetCore8.Migrations
                 column: "order_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_Productid",
+                name: "IX_OrderItem_product_id",
                 table: "OrderItem",
-                column: "Productid");
+                column: "product_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_category_id",
@@ -341,21 +456,26 @@ namespace MyApiNetCore8.Migrations
                 name: "IX_Rating_user_id",
                 table: "Rating",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RolePermission_roles_name",
-                table: "RolePermission",
-                column: "roles_name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_roles_name",
-                table: "UserRole",
-                column: "roles_name");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
+
             migrationBuilder.DropTable(
                 name: "Coupons");
 
@@ -366,10 +486,7 @@ namespace MyApiNetCore8.Migrations
                 name: "Rating");
 
             migrationBuilder.DropTable(
-                name: "RolePermission");
-
-            migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Order");
@@ -378,13 +495,7 @@ namespace MyApiNetCore8.Migrations
                 name: "Product");
 
             migrationBuilder.DropTable(
-                name: "Permission");
-
-            migrationBuilder.DropTable(
-                name: "Role");
-
-            migrationBuilder.DropTable(
-                name: "User");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Category");
