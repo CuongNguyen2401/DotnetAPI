@@ -15,7 +15,7 @@ namespace MyApiNetCore8.Controllers
             this.accountRepository = accountRepository;
         }
 
-        [HttpPost("signup")]
+        [HttpPost("logout")]
         public async Task<IActionResult> SignUp(SignUpModel model)
         {
             var result = await accountRepository.SignUpAsync(model);
@@ -26,7 +26,7 @@ namespace MyApiNetCore8.Controllers
             return BadRequest(result.Errors);
         }
 
-        [HttpPost("signin")]
+        [HttpPost("token")]
         public async Task<IActionResult> SignIn(SignInModel model)
         {
             var (token, refreshToken) = await accountRepository.SignInAsync(model);
@@ -37,7 +37,7 @@ namespace MyApiNetCore8.Controllers
             return Ok(new { Token = token, RefreshToken = refreshToken });
         }
 
-        [HttpPost("refresh-token")]
+        [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(string token, string refreshToken)
         {
             var (newToken, newRefreshToken) = await accountRepository.RefreshTokenAsync(token, refreshToken);
