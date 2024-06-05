@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MyApiNetCore8.Model
+namespace MyApiNetCore8.DTO.Request
 {
+    //It look like User DTO class
     public class SignInModel
     {
-        [Required, EmailAddress]
-        public string email { get; set; }
+        [Required]
+        public string userName { get; set; }
+
         [Required, MinLength(6)]
         public string password { get; set; }
     }

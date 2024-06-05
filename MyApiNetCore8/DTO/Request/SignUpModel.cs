@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MyApiNetCore8.Model
+namespace MyApiNetCore8.DTO.Request
 {
     public class SignUpModel
     {
@@ -9,7 +9,10 @@ namespace MyApiNetCore8.Model
         [Required]
         public string lastName { get; set; }
 
+
         public DateTime Dob { get; set; } = DateTime.Now;
+        [Required]
+        public string userName { get; set; }
         [Required, EmailAddress]
         public string email { get; set; }
         [Required, MinLength(6)]

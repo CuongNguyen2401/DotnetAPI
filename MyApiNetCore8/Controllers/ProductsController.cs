@@ -11,6 +11,7 @@ using MyApiNetCore8.Repository;
 using System.Text;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
+using MyApiNetCore8.Helper;
 
 namespace MyApiNetCore8.Controllers
 {
@@ -31,6 +32,7 @@ namespace MyApiNetCore8.Controllers
 
         // GET: api/Products
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> GetProduct()
         {
             return new ApiResponse<List<ProductResponse>>(1000, "Success", await _productRepository.GetAllProductsAsync());
@@ -39,6 +41,7 @@ namespace MyApiNetCore8.Controllers
 
         // GET: api/Products/5
         [HttpGet("{id}")]
+        [Authorize]  
         public async Task<ActionResult<ApiResponse<ProductResponse>>> GetProduct(long id)
         {
             var product = await _productRepository.GetProductByIdAsync(id);
@@ -54,8 +57,8 @@ namespace MyApiNetCore8.Controllers
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> PutProduct( ProductRequest product)
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<IActionResult> PutProduct(ProductRequest product)
         {
             var productResponse = await _productRepository.UpdateProductAsync(product);
             if (productResponse == null)
@@ -68,7 +71,7 @@ namespace MyApiNetCore8.Controllers
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<ProductResponse>> PostProduct([FromForm] ProductRequest productRequest)
         {
             if (productRequest == null)
@@ -94,7 +97,7 @@ namespace MyApiNetCore8.Controllers
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<IActionResult> DeleteProduct(long id)
         {
             var product = await _productRepository.GetProductByIdAsync(id);

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyApiNetCore8.Model;
+using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.Repositories;
+using System.Threading.Tasks;
 
 namespace MyApiNetCore8.Controllers
 {
@@ -9,13 +10,12 @@ namespace MyApiNetCore8.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
+        private readonly IAccountRepository accountRepository;
 
-            private readonly IAccountRepository accountRepository;
-
-            public AccountsController(IAccountRepository accountRepository)
-            {
-                this.accountRepository = accountRepository;
-            }
+        public AccountsController(IAccountRepository accountRepository)
+        {
+            this.accountRepository = accountRepository;
+        }
 
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp(SignUpModel model)
@@ -25,20 +25,29 @@ namespace MyApiNetCore8.Controllers
             {
                 return Ok();
             }
-            // Log the error or return it in the response
             return BadRequest(result.Errors);
         }
 
         [HttpPost("signin")]
-            public async Task<IActionResult> SignIn(SignInModel model)
+        public async Task<IActionResult> SignIn(SignInModel model)
+        {
+            var (token, refreshToken) = await accountRepository.SignInAsync(model);
+            if (string.IsNullOrEmpty(token))
             {
-                var token = await accountRepository.SignInAsync(model);
-                if (string.IsNullOrEmpty(token))
-                {
-                    return Unauthorized();
-                }
-                return Ok( token );
+                return Unauthorized();
             }
+            return Ok(new { Token = token, RefreshToken = refreshToken });
         }
-    
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(string token, string refreshToken)
+        {
+            var (newToken, newRefreshToken) = await accountRepository.RefreshTokenAsync(token, refreshToken);
+            if (string.IsNullOrEmpty(newToken))
+            {
+                return Unauthorized();
+            }
+            return Ok(new { Token = newToken, RefreshToken = newRefreshToken });
+        }
+    }
 }
