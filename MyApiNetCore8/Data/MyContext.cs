@@ -23,6 +23,7 @@ namespace MyApiNetCore8.Data
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderItem> OrderItem { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         #endregion
 

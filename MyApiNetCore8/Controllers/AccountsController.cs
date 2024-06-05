@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.Repositories;
-using System.Threading.Tasks;
 
 namespace MyApiNetCore8.Controllers
 {

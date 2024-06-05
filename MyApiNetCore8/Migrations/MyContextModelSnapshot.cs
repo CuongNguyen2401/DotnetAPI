@@ -444,6 +444,27 @@ namespace MyApiNetCore8.Migrations
                     b.ToTable("Rating");
                 });
 
+            modelBuilder.Entity("MyApiNetCore8.Model.RefreshToken", b =>
+                {
+                    b.Property<string>("Token")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("MyApiNetCore8.Model.User", b =>
                 {
                     b.Property<string>("Id")
@@ -485,9 +506,6 @@ namespace MyApiNetCore8.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
@@ -637,6 +655,13 @@ namespace MyApiNetCore8.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MyApiNetCore8.Model.RefreshToken", b =>
+                {
+                    b.HasOne("MyApiNetCore8.Model.User", null)
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("MyApiNetCore8.Model.Category", b =>
                 {
                     b.Navigation("Products");
@@ -656,6 +681,8 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.User", b =>
                 {
+                    b.Navigation("RefreshTokens");
+
                     b.Navigation("orders");
                 });
 #pragma warning restore 612, 618

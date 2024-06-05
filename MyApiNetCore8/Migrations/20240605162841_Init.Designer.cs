@@ -12,8 +12,8 @@ using MyApiNetCore8.Data;
 namespace MyApiNetCore8.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240604080050_AddIdentityAuthentication")]
-    partial class AddIdentityAuthentication
+    [Migration("20240605162841_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -447,6 +447,27 @@ namespace MyApiNetCore8.Migrations
                     b.ToTable("Rating");
                 });
 
+            modelBuilder.Entity("MyApiNetCore8.Model.RefreshToken", b =>
+                {
+                    b.Property<string>("Token")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("MyApiNetCore8.Model.User", b =>
                 {
                     b.Property<string>("Id")
@@ -492,12 +513,33 @@ namespace MyApiNetCore8.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime>("TokenCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("TokenExpires")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
+
+                    b.Property<DateTime?>("date_of_birth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("first_name")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("last_name")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("phone_number")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -616,6 +658,13 @@ namespace MyApiNetCore8.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MyApiNetCore8.Model.RefreshToken", b =>
+                {
+                    b.HasOne("MyApiNetCore8.Model.User", null)
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("MyApiNetCore8.Model.Category", b =>
                 {
                     b.Navigation("Products");
@@ -635,6 +684,8 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.User", b =>
                 {
+                    b.Navigation("RefreshTokens");
+
                     b.Navigation("orders");
                 });
 #pragma warning restore 612, 618

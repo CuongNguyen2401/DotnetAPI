@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using MyApiNetCore8.Data;
 using MyApiNetCore8.DTO.Request;
-using MyApiNetCore8.Helper;
 using MyApiNetCore8.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,21 +13,22 @@ namespace MyApiNetCore8.Repositories.impl
 {
     public class AccountRepository : IAccountRepository
     {
+        private readonly MyContext context;
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
         private readonly IConfiguration configuration;
-        private readonly RoleManager<IdentityRole> roleManager;
+
 
         public AccountRepository(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IConfiguration configuration,
-            RoleManager<IdentityRole> roleManager)
+            MyContext context)
         {
+            this.context = context;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
-            this.roleManager = roleManager;
         }
 
         public async Task<(string, string)> SignInAsync(SignInModel model)
@@ -64,37 +66,62 @@ namespace MyApiNetCore8.Repositories.impl
             var result = await userManager.CreateAsync(user, model.password);
             if (result.Succeeded)
             {
-                if (!await roleManager.RoleExistsAsync(AppRole.User))
-                {
-                    await roleManager.CreateAsync(new IdentityRole(AppRole.User));
-                }
-                await userManager.AddToRoleAsync(user, AppRole.User);
+                // Add user to roles, if any
             }
             return result;
         }
 
         public async Task<(string, string)> RefreshTokenAsync(string token, string refreshToken)
         {
+            // Validate the principal extracted from the token
             var principal = GetPrincipalFromExpiredToken(token);
             if (principal == null)
             {
                 return (string.Empty, string.Empty);
             }
 
+            // Extract the username from the principal
             var userName = principal.Identity.Name;
-            var user = await userManager.FindByNameAsync(userName);
-
-            if (user == null || user.RefreshToken != refreshToken || user.TokenExpires <= DateTime.Now)
+            if (string.IsNullOrEmpty(userName))
             {
                 return (string.Empty, string.Empty);
             }
 
+            // Find the user by username
+            var user = await userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return (string.Empty, string.Empty);
+            }
+            var storedRefreshToken = context.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken));
+            // Retrieve the stored refresh token
+            //var storedRefreshToken = user.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken) );
+            if (storedRefreshToken == null || storedRefreshToken.Expires <= DateTime.Now)
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            // Generate a new access token
             var newToken = await GenerateTokenAsync(user, userName);
+            if (string.IsNullOrEmpty(newToken))
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            // Generate a new refresh token
             var newRefreshToken = GenerateRefreshToken();
+            if (string.IsNullOrEmpty(newRefreshToken))
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            // Store the new refresh token for the user
             await StoreRefreshTokenAsync(user, newRefreshToken);
 
+            // Return the new access token and refresh token
             return (newToken, newRefreshToken);
         }
+
 
         private async Task<string> GenerateTokenAsync(User user, string userName)
         {
@@ -135,9 +162,13 @@ namespace MyApiNetCore8.Repositories.impl
 
         private async Task StoreRefreshTokenAsync(User user, string refreshToken)
         {
-            user.RefreshToken = refreshToken;
-            user.TokenCreated = DateTime.Now;
-            user.TokenExpires = DateTime.Now.AddDays(7);
+            var refreshTokenEntity = new RefreshToken
+            {
+                Token = refreshToken,
+                Expires = DateTime.Now.AddDays(7)
+            };
+
+            user.RefreshTokens.Add(refreshTokenEntity);
             await userManager.UpdateAsync(user);
         }
 
@@ -149,25 +180,20 @@ namespace MyApiNetCore8.Repositories.impl
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
-                ValidateLifetime = true // Here we are saying that we don't care about the token's expiration date
+                ValidateLifetime = true
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
 
-
-            if (!(securityToken is JwtSecurityToken jwtSecurityToken) || jwtSecurityToken.ValidTo <= DateTime.UtcNow)
+            if (securityToken is JwtSecurityToken jwtSecurityToken &&
+                jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new SecurityTokenExpiredException("Token has expired");
+                return principal;
             }
 
-            // Validate token signature
-            if (!jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("Invalid token");
-            }
-
-            return principal;
+            throw new SecurityTokenException("Invalid token");
         }
     }
 }
