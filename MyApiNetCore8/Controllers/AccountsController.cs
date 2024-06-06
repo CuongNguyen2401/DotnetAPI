@@ -16,7 +16,7 @@ namespace MyApiNetCore8.Controllers
             this.accountRepository = accountRepository;
         }
 
-        [HttpPost("logout")]
+        [HttpPost("signup")]
         public async Task<IActionResult> SignUp(SignUpModel model)
         {
             var result = await accountRepository.SignUpAsync(model);

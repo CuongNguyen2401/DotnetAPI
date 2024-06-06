@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MyApiNetCore8.Data;
 using MyApiNetCore8.DTO.Request;
+using MyApiNetCore8.Helper;
 using MyApiNetCore8.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,18 +18,20 @@ namespace MyApiNetCore8.Repositories.impl
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
         private readonly IConfiguration configuration;
-
+        private readonly RoleManager<IdentityRole> roleManager;
 
         public AccountRepository(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IConfiguration configuration,
-            MyContext context)
+            MyContext context,
+            RoleManager<IdentityRole> roleManager)
         {
             this.context = context;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
+            this.roleManager = roleManager;
         }
 
         public async Task<(string, string)> SignInAsync(SignInModel model)
@@ -66,7 +69,11 @@ namespace MyApiNetCore8.Repositories.impl
             var result = await userManager.CreateAsync(user, model.password);
             if (result.Succeeded)
             {
-                // Add user to roles, if any
+                if(!await roleManager.RoleExistsAsync(AppRole.User))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(AppRole.User));
+                }
+                await userManager.AddToRoleAsync(user, AppRole.User);
             }
             return result;
         }
