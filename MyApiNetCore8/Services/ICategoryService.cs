@@ -5,7 +5,7 @@ using MyApiNetCore8.DTO.Request;
 
 namespace MyApiNetCore8.Repository
 {
-    public interface ICategoryRepository
+    public interface ICategoryService
     {
         Task<List<CategoryResponse>> GetAllCategoriesAsync();
         Task<CategoryResponse> GetCategoryByIdAsync(long id);

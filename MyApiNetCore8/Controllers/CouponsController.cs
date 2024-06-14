@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MyApiNetCore8.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Model;
 using MyApiNetCore8.Repositories;
@@ -16,11 +9,11 @@ namespace MyApiNetCore8.Controllers
     [ApiController]
     public class CouponsController : ControllerBase
     {
-        private readonly ICouponRepository _repository;
+        private readonly ICouponService _service;
 
-        public CouponsController(ICouponRepository repository)
+        public CouponsController(ICouponService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         // GET: api/Coupons
@@ -28,7 +21,7 @@ namespace MyApiNetCore8.Controllers
         public async Task<ActionResult<ApiResponse<List<CouponResponse>>>> GetCoupon()
         {
            
-                var couponResponses = await _repository.GetAllCoupons();
+                var couponResponses = await _service.GetAllCoupons();
                 return Ok(new ApiResponse<List<CouponResponse>>(1000, "Success", couponResponses));
             
             
@@ -40,7 +33,7 @@ namespace MyApiNetCore8.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Coupon>> GetCoupon(long id)
         {
-            var coupon = await _repository.GetCouponById(id);
+            var coupon = await _service.GetCouponById(id);
             return Ok(new ApiResponse<CouponResponse>(1000, "Success", coupon));
         }
 
@@ -50,7 +43,7 @@ namespace MyApiNetCore8.Controllers
         [HttpPost]
         public async Task<ActionResult<Coupon>> PostCoupon(CouponRequest coupon)
         {
-            var couponResponse = await _repository.CreateCoupon(coupon);
+            var couponResponse = await _service.CreateCoupon(coupon);
             return CreatedAtAction("GetCoupon", new ApiResponse<CouponResponse>(1000, "Success", couponResponse));
 
         }
@@ -59,18 +52,18 @@ namespace MyApiNetCore8.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoupon(long id)
         {
-           var coupon = await _repository.GetCouponById(id);
+           var coupon = await _service.GetCouponById(id);
             if (coupon == null)
             {
                 return NotFound();
             }
-            _repository.DeleteCoupon(id);
+            _service.DeleteCoupon(id);
             return Ok(new ApiResponse<CouponResponse>(1000, "Success", coupon));
         }
 
         private bool CouponExists(long id)
         {
-            return _repository.GetCouponById(id) != null;
+            return _service.GetCouponById(id) != null;
         }
     }
 }

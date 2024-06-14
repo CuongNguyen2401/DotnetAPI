@@ -7,6 +7,7 @@ namespace MyApiNetCore8.DTO.Request
     {
         public string name { get; set; }
         public string description { get; set; }
+        
         public Status status { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MyApiNetCore8.Repositories
 {
-    public interface ICouponRepository
+    public interface ICouponService
     {
         Task<List<CouponResponse>> GetAllCoupons();
         Task<CouponResponse> GetCouponById(long id);

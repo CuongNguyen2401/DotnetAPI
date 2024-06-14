@@ -20,6 +20,16 @@ namespace MyApiNetCore8.Helper
 
             CreateMap<Coupon, CouponResponse>().ReverseMap();
             CreateMap<CouponRequest, Coupon>().ReverseMap();
+            
+            CreateMap<OrderRequest, Order>().ReverseMap();
+            CreateMap<Order, OrderResponse>().ReverseMap();
+            CreateMap<OrderItemRequest, OrderItem>().ReverseMap();
+            CreateMap<OrderItem, OrderItemResponse>().ReverseMap();
+            
+            CreateMap<User, AccountResponse>()
+                .ForMember(dest => dest.email, opt => opt.MapFrom(src => src.Email))
+                .ReverseMap();
+            
 
         }
     }

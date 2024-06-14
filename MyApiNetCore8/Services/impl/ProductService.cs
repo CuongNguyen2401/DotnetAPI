@@ -10,17 +10,17 @@ using MyApiNetCore8.Repository;
 
 namespace MyApiNetCore8.Repository.impl
 {
-    public class ProductRepository : IProductRepository
+    public class ProductService : IProductService
     {
         private readonly MyContext _context;
         private readonly IMapper _mapper;
         private readonly Cloudinary _cloudinary;
 
-        public ProductRepository(MyContext context, IMapper mapper, Cloudinary cloudinary)
+        public ProductService(MyContext context, IMapper mapper, Cloudinary cloudinary)
         {
             _context = context;
             _mapper = mapper;
-            _cloudinary= cloudinary;
+            _cloudinary = cloudinary;
         }
 
         public async Task<ProductResponse> CreateProductAsync(ProductRequest productRequest)
@@ -37,7 +37,7 @@ namespace MyApiNetCore8.Repository.impl
                 name = productRequest.name,
                 description = productRequest.description,
                 price = productRequest.price,
-                sale_price = productRequest.salePrice,
+                salePrice = productRequest.salePrice,
                 quantity = productRequest.quantity,
                 category_id = productRequest.categoryId
             };
@@ -45,11 +45,21 @@ namespace MyApiNetCore8.Repository.impl
             _context.Product.Add(productEntity);
             await _context.SaveChangesAsync();
 
-   
+            productEntity.slug = CreateSlug(productEntity);
+            _context.Product.Update(productEntity);
+            await _context.SaveChangesAsync();
+
+
+            productEntity = await _context.Product.Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.id == productEntity.id);
+
             return _mapper.Map<ProductResponse>(productEntity);
         }
 
-
+        private string CreateSlug(Product product)
+        {
+            return $"{product.name.ToLower().Replace(" ", "-")}-{product.id}";
+        }
 
 
         public async Task<string> UploadImageAsync(IFormFile image, Cloudinary cloudinary)
@@ -96,13 +106,9 @@ namespace MyApiNetCore8.Repository.impl
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"Error uploading image: {ex.Message}");
-                throw; 
+                throw;
             }
         }
-
-
-
-
 
 
         public void DeleteProduct(long id)
@@ -128,9 +134,9 @@ namespace MyApiNetCore8.Repository.impl
             return _mapper.Map<ProductResponse>(product);
         }
 
-        public async Task<ProductResponse> UpdateProductAsync( ProductRequest product)
+        public async Task<ProductResponse> UpdateProductAsync(UpdateProductRequest product)
         {
-           var productEntity = await _context.Product.FindAsync(product.id);
+            var productEntity = await _context.Product.FindAsync(product.id);
             if (productEntity == null)
             {
                 return null;
@@ -139,16 +145,19 @@ namespace MyApiNetCore8.Repository.impl
             productEntity.name = product.name;
             productEntity.description = product.description;
             productEntity.price = product.price;
-            productEntity.sale_price = product.salePrice;
+            productEntity.salePrice = product.salePrice;
             productEntity.quantity = product.quantity;
             productEntity.category_id = product.categoryId;
 
             _context.Product.Update(productEntity);
             await _context.SaveChangesAsync();
 
+
+            productEntity = await _context.Product.Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.id == productEntity.id);
+
             return _mapper.Map<ProductResponse>(productEntity);
+
         }
-
-
     }
 }
