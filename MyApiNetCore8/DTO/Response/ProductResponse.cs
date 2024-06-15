@@ -1,5 +1,6 @@
 ﻿using MyApiNetCore8.Enums;
 using MyApiNetCore8.Model;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using static MyApiNetCore8.Model.Product;
 
@@ -15,9 +16,11 @@ namespace MyApiNetCore8.DTO.Response
         public double salePrice { get; set; }
         public string image { get; set; }
         public int quantity { get; set; }
+        public string slug { get; set; }
 
+     
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public Status productStatus { get; set; } = Status.ACTIVE;
+        public Status productStatus { get; set; }
 
 
         public CategoryResponse category { get; set; }

@@ -12,6 +12,8 @@ namespace MyApiNetCore8.Repository.impl
 {
     public class ProductService : IProductService
     {
+     
+
         private readonly MyContext _context;
         private readonly IMapper _mapper;
         private readonly Cloudinary _cloudinary;
@@ -39,7 +41,8 @@ namespace MyApiNetCore8.Repository.impl
                 price = productRequest.price,
                 salePrice = productRequest.salePrice,
                 quantity = productRequest.quantity,
-                category_id = productRequest.categoryId
+                category_id = productRequest.categoryId,
+                status = Enums.Status.ACTIVE
             };
 
             _context.Product.Add(productEntity);
@@ -54,6 +57,22 @@ namespace MyApiNetCore8.Repository.impl
                 .FirstOrDefaultAsync(p => p.id == productEntity.id);
 
             return _mapper.Map<ProductResponse>(productEntity);
+        }
+
+        public async Task<List<ProductResponse>> FindSalesProduct()
+        {
+            var products = await _context.Product
+                .Include(p=>p.Category)
+                .Where(p => p.salePrice < p.price)
+                .ToListAsync();
+
+            var sortedProducts = products
+                .OrderByDescending(p => (p.price - p.salePrice) / p.price * 100)
+                .ToList();
+
+            return sortedProducts
+                .Select(p => _mapper.Map<ProductResponse>(p))
+                .ToList();
         }
 
         private string CreateSlug(Product product)
@@ -111,11 +130,36 @@ namespace MyApiNetCore8.Repository.impl
         }
 
 
-        public void DeleteProduct(long id)
+        public async Task DeleteProduct(long id)
         {
-            var product = _context.Product.Find(id);
-            _context.Product.Remove(product);
-            _context.SaveChanges();
+            var product = await _context.Product.FindAsync(id);
+            if (product == null)
+            {
+                throw new Exception($"Product with ID {id} not found.");
+            }
+
+            product.status = Enums.Status.INACTIVE;
+            _context.Product.Update(product);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<ProductResponse>> FindLimitedProductsByCategory(string categoryName, int limit)
+        {
+          var products = await _context.Product
+                .Include(m => m.Category)
+                .Where(p => p.Category.name == categoryName)
+                .Take(limit)
+                .ToListAsync();
+            return _mapper.Map<List<ProductResponse>>(products);
+        }
+
+        public async Task<List<ProductResponse>> FindByCategory(string categoryName)
+        {
+          var products = await _context.Product
+                .Include(m => m.Category)
+                .Where(p => p.Category.name == categoryName)
+                .ToListAsync();
+            return _mapper.Map<List<ProductResponse>>(products);
         }
 
         public async Task<List<ProductResponse>> GetAllProductsAsync()
@@ -158,6 +202,32 @@ namespace MyApiNetCore8.Repository.impl
 
             return _mapper.Map<ProductResponse>(productEntity);
 
+        }
+        public async Task<List<ProductResponse>> FindProductsByQueryString(string q)
+        {
+            return await _context.Product
+                .Include(p => p.Category)
+                .Where(p => p.name.Contains(q) || p.description.Contains(q) || p.Category.name.Contains(q))
+                .Select(p => _mapper.Map<ProductResponse>(p))
+                .ToListAsync();
+        }
+
+        public async Task<ProductResponse> GetProductBySlug(string slug)
+        {
+            var product =  await _context.Product
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.slug == slug);
+    
+            return _mapper.Map<ProductResponse>(product);
+        }
+
+        public async Task<List<ProductResponse>> getListProductsByIds(List<long> ids)
+        {
+            var products = await _context.Product
+                .Include(p => p.Category)
+                .Where(p => ids.Contains(p.id))
+                .ToListAsync();
+            return _mapper.Map<List<ProductResponse>>(products);
         }
     }
 }

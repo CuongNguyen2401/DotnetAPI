@@ -10,7 +10,6 @@ namespace MyApiNetCore8.Model
         public string firstName { get; set; }
         public Gender gender { get; set; }
         public string lastName { get; set; }
-        public string phoneNumber { get; set; }
         public string address { get; set; }
         public string avatar { get; set; }
         public Status status { get; set; }

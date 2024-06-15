@@ -6,7 +6,7 @@ namespace MyApiNetCore8.DTO.Request
     public class SignInModel
     {
         [Required]
-        public string userName { get; set; }
+        public string username { get; set; }
 
         [Required, MinLength(6)]
         public string password { get; set; }

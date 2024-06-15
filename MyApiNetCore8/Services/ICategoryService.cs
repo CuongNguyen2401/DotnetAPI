@@ -10,8 +10,12 @@ namespace MyApiNetCore8.Repository
         Task<List<CategoryResponse>> GetAllCategoriesAsync();
         Task<CategoryResponse> GetCategoryByIdAsync(long id);
         Task<CategoryResponse> CreateCategoryAsync(CategoryRequest category);
-        Task<CategoryResponse> UpdateCategoryAsync(long id, CategoryRequest category);
+        Task<CategoryResponse> UpdateCategoryAsync(UpdateCategoryRequest category);
         Task<int> GetTotalProductQuantityByCategoryNameAsync(string categoryName);
+
+        Task DeteleteCategory(long id);
+
+        
 
     }
 }

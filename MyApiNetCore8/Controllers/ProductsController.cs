@@ -91,26 +91,37 @@ namespace MyApiNetCore8.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
             }
         }
-
-
-
-
-
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        [Authorize(Roles = AppRole.Admin)]
-        public async Task<IActionResult> DeleteProduct(long id)
+        
+        [HttpGet("category/{categoryName}")]
+        public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> GetProductsByCategory(string categoryName, int? limit)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
+            if (limit.HasValue)
             {
-                return NotFound();
+                var limitedProducts = await _productService.FindLimitedProductsByCategory(categoryName, limit.Value);
+                return Ok(new ApiResponse<List<ProductResponse>>(1000, "Success", limitedProducts));
+            }
+            else
+            {
+                var products = await _productService.FindByCategory(categoryName);
+                return Ok(new ApiResponse<List<ProductResponse>>(1000, "Success", products));
+            }
+        }
+
+
+        [HttpDelete]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<ActionResult<ApiResponse<string>>> DeleteProduct([FromQuery] long[] ids)
+        {
+           
+
+            foreach (var id in ids)
+            {
+                    await _productService.DeleteProduct(id);
             }
 
-            _productService.DeleteProduct(id);
+            
 
-            return Ok(new ApiResponse<ProductResponse>(1000, "Success", product));
-
+            return Ok(new ApiResponse<string>(1000, "Success", "Products deleted successfully."));
         }
 
         private bool ProductExists(long id)
@@ -118,5 +129,41 @@ namespace MyApiNetCore8.Controllers
             var product = _productService.GetProductByIdAsync(id);
             return product != null;
         }
+        
+        [HttpGet("sales")]
+        public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> GetSalesProduct()
+        {
+            var products = await _productService.FindSalesProduct();
+            return Ok(new ApiResponse<List<ProductResponse>>(1000, "Success", products));
+        }
+        
+        [HttpGet("search")]
+        public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> SearchProducts([FromQuery] string q)
+        {
+            var products = await _productService.FindProductsByQueryString(q);
+            return Ok(new ApiResponse<List<ProductResponse>>(1000, "Success", products));
+        }
+        
+        [HttpGet("detail/{slug}")]
+        public async Task<ActionResult<ApiResponse<ProductResponse>>> getProductBySlug(string slug)
+        {
+            var product = await _productService.GetProductBySlug(slug);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(new ApiResponse<ProductResponse>(1000, "Success", product));
+        }
+
+        [HttpGet("list")]
+        public async Task<ApiResponse<List<ProductResponse>>> GetProductsByIds([FromQuery] List<long> ids)
+        {
+            var products = await _productService.getListProductsByIds(ids);
+            return new ApiResponse<List<ProductResponse>>(1000, "Success", products);
+        }
+
     }
+    
+    
+    
 }

@@ -21,8 +21,8 @@ namespace MyApiNetCore8.Model
         public double price { get; set; }
 
         [Column(TypeName = "ENUM('ACTIVE', 'INACTIVE')")]
-    
-        public Status status { get; set; }= Status.ACTIVE;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Status status { get; set; }
         [Required]
         public int quantity { get; set; }
         public double salePrice { get; set; }
