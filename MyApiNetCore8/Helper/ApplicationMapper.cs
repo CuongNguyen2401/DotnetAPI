@@ -36,7 +36,10 @@ namespace MyApiNetCore8.Helper
                 .ForMember(dest => dest.email, opt => opt.MapFrom(src => src.Email))
                 .ReverseMap();
 
+            CreateMap<OrderItem, BestSellingProductResponse>()
+                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.product));
 
+            CreateMap<OrderItem, CategoryRevenueResponse>();
         }
     }
 }
