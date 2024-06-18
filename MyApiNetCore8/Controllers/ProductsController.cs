@@ -40,7 +40,7 @@ namespace MyApiNetCore8.Controllers
 
         // GET: api/Products/5
         [HttpGet("{id}")]
-        [Authorize]  
+        [Authorize]
         public async Task<ActionResult<ApiResponse<ProductResponse>>> GetProduct(long id)
         {
             var product = await _productService.GetProductByIdAsync(id);
@@ -57,7 +57,7 @@ namespace MyApiNetCore8.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
         [Authorize(Roles = AppRole.Admin)]
-        public async  Task<ActionResult<ApiResponse<ProductResponse>>>  PutProduct([FromForm] UpdateProductRequest product)
+        public async Task<ActionResult<ApiResponse<ProductResponse>>> PutProduct([FromForm] UpdateProductRequest product)
         {
             var productResponse = await _productService.UpdateProductAsync(product);
             if (productResponse == null)
@@ -67,7 +67,7 @@ namespace MyApiNetCore8.Controllers
             return Ok(new ApiResponse<ProductResponse>(1000, "Success", productResponse));
         }
 
-   
+
         [HttpPost]
         [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<ApiResponse<ProductResponse>>> PostProduct([FromForm] ProductRequest productRequest)
@@ -80,9 +80,9 @@ namespace MyApiNetCore8.Controllers
             try
             {
                 var productResponse = await _productService.CreateProductAsync(productRequest);
-                return 
-                    CreatedAtAction("GetProduct", 
-                        new { id = productResponse.id }, 
+                return
+                    CreatedAtAction("GetProduct",
+                        new { id = productResponse.id },
                         new ApiResponse<ProductResponse>(1000, "Success", productResponse));
             }
             catch (Exception ex)
@@ -91,7 +91,7 @@ namespace MyApiNetCore8.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
             }
         }
-        
+
         [HttpGet("category/{categoryName}")]
         public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> GetProductsByCategory(string categoryName, int? limit)
         {
@@ -112,14 +112,14 @@ namespace MyApiNetCore8.Controllers
         [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<ApiResponse<string>>> DeleteProduct([FromQuery] long[] ids)
         {
-           
+
 
             foreach (var id in ids)
             {
-                    await _productService.DeleteProduct(id);
+                await _productService.DeleteProduct(id);
             }
 
-            
+
 
             return Ok(new ApiResponse<string>(1000, "Success", "Products deleted successfully."));
         }
@@ -129,21 +129,21 @@ namespace MyApiNetCore8.Controllers
             var product = _productService.GetProductByIdAsync(id);
             return product != null;
         }
-        
+
         [HttpGet("sales")]
         public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> GetSalesProduct()
         {
             var products = await _productService.FindSalesProduct();
             return Ok(new ApiResponse<List<ProductResponse>>(1000, "Success", products));
         }
-        
+
         [HttpGet("search")]
         public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> SearchProducts([FromQuery] string q)
         {
             var products = await _productService.FindProductsByQueryString(q);
             return Ok(new ApiResponse<List<ProductResponse>>(1000, "Success", products));
         }
-        
+
         [HttpGet("detail/{slug}")]
         public async Task<ActionResult<ApiResponse<ProductResponse>>> getProductBySlug(string slug)
         {
@@ -162,8 +162,25 @@ namespace MyApiNetCore8.Controllers
             return new ApiResponse<List<ProductResponse>>(1000, "Success", products);
         }
 
+        [HttpGet("most-sold")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<ApiResponse<BestSellingProductResponse>> GetBestSellingProducts()
+        {
+            var result = await _productService.GetBestSellingProductsAsync();
+            var response = new ApiResponse<BestSellingProductResponse>(1000, "Success", result);
+            return response;
+        }
+
+        [HttpGet("sales-category")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<IActionResult> GetTotalRevenueByCategory([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var result = await _productService.GetTotalRevenueByCategoryAsync(startDate, endDate);
+            var response = new ApiResponse<List<CategoryRevenueResponse>>(1000, "Success", result);
+            return Ok(response);
+        }
     }
-    
-    
-    
+
+
+
 }

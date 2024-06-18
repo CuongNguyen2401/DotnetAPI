@@ -14,15 +14,18 @@ namespace MyApiNetCore8.Repository
         Task DeleteProduct(long id);
         Task<List<ProductResponse>> FindLimitedProductsByCategory(string categoryName, int limit);
         Task<List<ProductResponse>> FindByCategory(string categoryName);
-        
-       Task<List<ProductResponse>> FindSalesProduct();
 
-       Task<List<ProductResponse>> FindProductsByQueryString(string q);
-       
-       Task<ProductResponse> GetProductBySlug(string slug);
+        Task<List<ProductResponse>> FindSalesProduct();
 
-       Task<List<ProductResponse>> getListProductsByIds(List<long> ids);
+        Task<List<ProductResponse>> FindProductsByQueryString(string q);
 
+        Task<ProductResponse> GetProductBySlug(string slug);
+
+        Task<List<ProductResponse>> getListProductsByIds(List<long> ids);
+
+        Task<BestSellingProductResponse> GetBestSellingProductsAsync();
+
+        Task<List<CategoryRevenueResponse>> GetTotalRevenueByCategoryAsync(DateTime startDate, DateTime endDate);
 
     }
 }
