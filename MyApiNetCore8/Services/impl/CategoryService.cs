@@ -9,12 +9,12 @@ using MyApiNetCore8.Data;
 
 namespace MyApiNetCore8.Repository.impl
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CategoryService : ICategoryService
     {
         private readonly MyContext _context;
         private readonly IMapper _mapper;
 
-        public CategoryRepository(MyContext context, IMapper mapper)
+        public CategoryService(MyContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

@@ -20,22 +20,21 @@ namespace MyApiNetCore8.Controllers
     public class ProductsController : ControllerBase
     {
 
-        private readonly IProductRepository _productRepository;
+        private readonly IProductService _productService;
         private readonly Cloudinary _cloudinary;
 
 
-        public ProductsController(IProductRepository productRepository, Cloudinary cloudinary)
+        public ProductsController(IProductService productService, Cloudinary cloudinary)
         {
-            _productRepository = productRepository;
+            _productService = productService;
             _cloudinary = cloudinary;
         }
 
         // GET: api/Products
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<ApiResponse<List<ProductResponse>>>> GetProduct()
         {
-            return new ApiResponse<List<ProductResponse>>(1000, "Success", await _productRepository.GetAllProductsAsync());
+            return new ApiResponse<List<ProductResponse>>(1000, "Success", await _productService.GetAllProductsAsync());
 
         }
 
@@ -44,7 +43,7 @@ namespace MyApiNetCore8.Controllers
         [Authorize]  
         public async Task<ActionResult<ApiResponse<ProductResponse>>> GetProduct(long id)
         {
-            var product = await _productRepository.GetProductByIdAsync(id);
+            var product = await _productService.GetProductByIdAsync(id);
 
             if (product == null)
             {
@@ -58,9 +57,9 @@ namespace MyApiNetCore8.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
         [Authorize(Roles = AppRole.Admin)]
-        public async Task<IActionResult> PutProduct(ProductRequest product)
+        public async  Task<ActionResult<ApiResponse<ProductResponse>>>  PutProduct([FromForm] UpdateProductRequest product)
         {
-            var productResponse = await _productRepository.UpdateProductAsync(product);
+            var productResponse = await _productService.UpdateProductAsync(product);
             if (productResponse == null)
             {
                 return NotFound();
@@ -68,11 +67,10 @@ namespace MyApiNetCore8.Controllers
             return Ok(new ApiResponse<ProductResponse>(1000, "Success", productResponse));
         }
 
-        // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+   
         [HttpPost]
         [Authorize(Roles = AppRole.Admin)]
-        public async Task<ActionResult<ProductResponse>> PostProduct([FromForm] ProductRequest productRequest)
+        public async Task<ActionResult<ApiResponse<ProductResponse>>> PostProduct([FromForm] ProductRequest productRequest)
         {
             if (productRequest == null)
             {
@@ -81,8 +79,11 @@ namespace MyApiNetCore8.Controllers
 
             try
             {
-                var productResponse = await _productRepository.CreateProductAsync(productRequest);
-                return CreatedAtAction("GetProduct", new { id = productResponse.id }, new ApiResponse<ProductResponse>(1000, "Success", productResponse));
+                var productResponse = await _productService.CreateProductAsync(productRequest);
+                return 
+                    CreatedAtAction("GetProduct", 
+                        new { id = productResponse.id }, 
+                        new ApiResponse<ProductResponse>(1000, "Success", productResponse));
             }
             catch (Exception ex)
             {
@@ -100,13 +101,13 @@ namespace MyApiNetCore8.Controllers
         [Authorize(Roles = AppRole.Admin)]
         public async Task<IActionResult> DeleteProduct(long id)
         {
-            var product = await _productRepository.GetProductByIdAsync(id);
+            var product = await _productService.GetProductByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            _productRepository.DeleteProduct(id);
+            _productService.DeleteProduct(id);
 
             return Ok(new ApiResponse<ProductResponse>(1000, "Success", product));
 
@@ -114,7 +115,7 @@ namespace MyApiNetCore8.Controllers
 
         private bool ProductExists(long id)
         {
-            var product = _productRepository.GetProductByIdAsync(id);
+            var product = _productService.GetProductByIdAsync(id);
             return product != null;
         }
     }

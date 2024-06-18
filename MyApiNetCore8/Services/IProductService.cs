@@ -5,14 +5,12 @@ using System.Runtime.InteropServices;
 
 namespace MyApiNetCore8.Repository
 {
-    public interface IProductRepository
+    public interface IProductService
     {
         Task<List<ProductResponse>> GetAllProductsAsync();
         Task<ProductResponse> GetProductByIdAsync(long id);
         Task<ProductResponse> CreateProductAsync(ProductRequest productRequest);
-        Task<ProductResponse> UpdateProductAsync( ProductRequest product);
+        Task<ProductResponse> UpdateProductAsync(UpdateProductRequest product);
         void DeleteProduct(long id);
-
-
     }
 }

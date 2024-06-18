@@ -6,12 +6,12 @@ using MyApiNetCore8.Model;
 
 namespace MyApiNetCore8.Repositories.impl
 {
-    public class CouponRepository : ICouponRepository
+    public class CouponService : ICouponService
     {
         private readonly MyContext _context;
         private readonly IMapper _mapper;
 
-        public CouponRepository(MyContext context, IMapper mapper)
+        public CouponService(MyContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -40,9 +40,9 @@ namespace MyApiNetCore8.Repositories.impl
 
             foreach (var coupon in coupons)
             {
-                if (!IsValidDateTime(coupon.ExpiryDate))
+                if (!IsValidDateTime(coupon.expiryDate))
                 {
-                    coupon.ExpiryDate = DateTime.MinValue; 
+                    coupon.expiryDate = DateTime.MinValue; 
                 }
             }
 
@@ -65,7 +65,7 @@ namespace MyApiNetCore8.Repositories.impl
 
         public async Task<CouponResponse> GetCouponById(long id)
         {
-            var coupon = await _context.Coupons.FirstOrDefaultAsync(x => x.Id == id);
+            var coupon = await _context.Coupons.FirstOrDefaultAsync(x => x.id == id);
             return _mapper.Map<CouponResponse>(coupon);
 
 

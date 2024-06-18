@@ -12,12 +12,12 @@ namespace MyApiNetCore8.DTO.Response
         public string name { get; set; }
         public string description { get; set; }
         public double price { get; set; }
-        public double sale_price { get; set; }
+        public double salePrice { get; set; }
         public string image { get; set; }
-        public int stock { get; set; }
+        public int quantity { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public Status status { get; set; } = Status.ACTIVE;
+        public Status productStatus { get; set; } = Status.ACTIVE;
 
 
         public CategoryResponse category { get; set; }

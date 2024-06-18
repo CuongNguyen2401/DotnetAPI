@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MyApiNetCore8.Services;
+using MyApiNetCore8.Services.impl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,10 +45,11 @@ builder.Services.AddDbContext<MyContext>(options =>
 // Configuring AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 // Configuring Repositories
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ICouponRepository, CouponRepository>();
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 //Configuring Cloudinary
 DotEnv.Load(new DotEnvOptions(probeForEnv: true));

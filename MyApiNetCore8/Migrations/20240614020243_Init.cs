@@ -40,16 +40,17 @@ namespace MyApiNetCore8.Migrations
                 {
                     Id = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    date_of_birth = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    first_name = table.Column<string>(type: "longtext", nullable: true)
+                    dateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    firstName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     gender = table.Column<int>(type: "int", nullable: false),
-                    last_name = table.Column<string>(type: "longtext", nullable: true)
+                    lastName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    phone_number = table.Column<string>(type: "longtext", nullable: true)
+                    address = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    TokenCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    TokenExpires = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    avatar = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    status = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -108,12 +109,13 @@ namespace MyApiNetCore8.Migrations
                 name: "Coupons",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(type: "longtext", nullable: true)
+                    code = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Discount = table.Column<double>(type: "double", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    discount = table.Column<double>(type: "double", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false),
+                    expiryDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -123,7 +125,22 @@ namespace MyApiNetCore8.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Coupons", x => x.Id);
+                    table.PrimaryKey("PK_Coupons", x => x.id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Token = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Expires = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Token);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -262,17 +279,18 @@ namespace MyApiNetCore8.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     address = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    customer_name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    customerName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     note = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    order_status = table.Column<string>(type: "ENUM('PENDING', 'CONFIRMED', 'SHIPPING', 'DELIVERED', 'CANCELLED')", nullable: false)
+                    orderStatus = table.Column<string>(type: "ENUM('PENDING', 'CONFIRMED', 'SHIPPING', 'DELIVERED', 'CANCELLED')", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    phone_number = table.Column<string>(type: "longtext", nullable: false)
+                    phoneNumber = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    total_pay = table.Column<double>(type: "double", nullable: false),
+                    totalPay = table.Column<double>(type: "double", nullable: false),
+                    userId = table.Column<int>(type: "int", nullable: false),
                     user_id = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
@@ -294,28 +312,6 @@ namespace MyApiNetCore8.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "RefreshTokens",
-                columns: table => new
-                {
-                    Token = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Expires = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RefreshTokens", x => x.Token);
-                    table.ForeignKey(
-                        name: "FK_RefreshTokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Product",
                 columns: table => new
                 {
@@ -331,7 +327,7 @@ namespace MyApiNetCore8.Migrations
                     status = table.Column<string>(type: "ENUM('ACTIVE', 'INACTIVE')", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     quantity = table.Column<int>(type: "int", nullable: false),
-                    sale_price = table.Column<double>(type: "double", nullable: false),
+                    salePrice = table.Column<double>(type: "double", nullable: false),
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     category_id = table.Column<long>(type: "bigint", nullable: true),
@@ -362,7 +358,8 @@ namespace MyApiNetCore8.Migrations
                     price = table.Column<double>(type: "double", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     order_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_id = table.Column<long>(type: "bigint", nullable: false),
+                    productId = table.Column<long>(type: "bigint", nullable: false),
+                    product_id = table.Column<long>(type: "bigint", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -383,8 +380,7 @@ namespace MyApiNetCore8.Migrations
                         name: "FK_OrderItem_Product_product_id",
                         column: x => x.product_id,
                         principalTable: "Product",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -488,11 +484,6 @@ namespace MyApiNetCore8.Migrations
                 name: "IX_Rating_user_id",
                 table: "Rating",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RefreshTokens_UserId",
-                table: "RefreshTokens",
-                column: "UserId");
         }
 
         /// <inheritdoc />

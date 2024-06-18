@@ -9,29 +9,38 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
+using MyApiNetCore8.DTO.Response;
 
 namespace MyApiNetCore8.Repositories.impl
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountService : IAccountService
     {
         private readonly MyContext context;
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
         private readonly IConfiguration configuration;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IMapper mapper;
 
-        public AccountRepository(
+        public AccountService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IConfiguration configuration,
             MyContext context,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IHttpContextAccessor httpContextAccessor,
+            IMapper mapper
+        )
         {
             this.context = context;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
             this.roleManager = roleManager;
+            this.httpContextAccessor = httpContextAccessor;
+            this.mapper = mapper;
         }
 
         public async Task<(string, string)> SignInAsync(SignInModel model)
@@ -59,22 +68,24 @@ namespace MyApiNetCore8.Repositories.impl
         {
             var user = new User
             {
-                first_name = model.firstName,
-                last_name = model.lastName,
+                firstName = model.firstName,
+                lastName = model.lastName,
                 Email = model.email,
                 UserName = model.userName,
-                date_of_birth = model.Dob.Date
+                dateOfBirth = model.Dob.Date
             };
 
             var result = await userManager.CreateAsync(user, model.password);
             if (result.Succeeded)
             {
-                if(!await roleManager.RoleExistsAsync(AppRole.User))
+                if (!await roleManager.RoleExistsAsync(AppRole.User))
                 {
                     await roleManager.CreateAsync(new IdentityRole(AppRole.User));
                 }
+
                 await userManager.AddToRoleAsync(user, AppRole.User);
             }
+
             return result;
         }
 
@@ -100,6 +111,7 @@ namespace MyApiNetCore8.Repositories.impl
             {
                 return (string.Empty, string.Empty);
             }
+
             var storedRefreshToken = context.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken));
             // Retrieve the stored refresh token
             //var storedRefreshToken = user.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken) );
@@ -149,13 +161,24 @@ namespace MyApiNetCore8.Repositories.impl
             var token = new JwtSecurityToken(
                 issuer: configuration["JWT:ValidIssuer"],
                 audience: configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddMinutes(20),
+                expires: DateTime.Now.AddDays(1),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512Signature)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<AccountResponse> GetMyInfoAsync()
+        {
+            var username = httpContextAccessor.HttpContext.User.Identity.Name;
+            var user = await userManager.FindByNameAsync(username);
+            var roles = await userManager.GetRolesAsync(user);
+            var userResponse = mapper.Map<AccountResponse>(user);
+            userResponse.roles = roles.ToList();
+            return userResponse;
+        }
+
 
         private string GenerateRefreshToken()
         {
@@ -175,8 +198,8 @@ namespace MyApiNetCore8.Repositories.impl
                 Expires = DateTime.Now.AddDays(7)
             };
 
-            user.RefreshTokens.Add(refreshTokenEntity);
-            await userManager.UpdateAsync(user);
+            await context.RefreshTokens.AddAsync(refreshTokenEntity);
+            await context.SaveChangesAsync();
         }
 
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
@@ -195,7 +218,8 @@ namespace MyApiNetCore8.Repositories.impl
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
 
             if (securityToken is JwtSecurityToken jwtSecurityToken &&
-                jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature, StringComparison.InvariantCultureIgnoreCase))
+                jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature,
+                    StringComparison.InvariantCultureIgnoreCase))
             {
                 return principal;
             }

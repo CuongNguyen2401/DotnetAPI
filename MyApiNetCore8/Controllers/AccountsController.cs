@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CloudinaryDotNet;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using MyApiNetCore8.DTO.Request;
+using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Repositories;
 
 namespace MyApiNetCore8.Controllers
@@ -9,17 +12,17 @@ namespace MyApiNetCore8.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly IAccountRepository accountRepository;
+        private readonly IAccountService _accountService;
 
-        public AccountsController(IAccountRepository accountRepository)
+        public AccountsController(IAccountService accountService)
         {
-            this.accountRepository = accountRepository;
+            this._accountService = accountService;
         }
 
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp(SignUpModel model)
         {
-            var result = await accountRepository.SignUpAsync(model);
+            var result = await _accountService.SignUpAsync(model);
             if (result.Succeeded)
             {
                 return Ok();
@@ -30,7 +33,7 @@ namespace MyApiNetCore8.Controllers
         [HttpPost("token")]
         public async Task<IActionResult> SignIn(SignInModel model)
         {
-            var (token, refreshToken) = await accountRepository.SignInAsync(model);
+            var (token, refreshToken) = await _accountService.SignInAsync(model);
             if (string.IsNullOrEmpty(token))
             {
                 return Unauthorized();
@@ -41,12 +44,25 @@ namespace MyApiNetCore8.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(string token, string refreshToken)
         {
-            var (newToken, newRefreshToken) = await accountRepository.RefreshTokenAsync(token, refreshToken);
+            var (newToken, newRefreshToken) = await _accountService.RefreshTokenAsync(token, refreshToken);
             if (string.IsNullOrEmpty(newToken))
             {
                 return Unauthorized();
             }
             return Ok(new { Token = newToken, RefreshToken = newRefreshToken });
+        }
+        
+        
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<AccountResponse>>> GetMyInfo()
+        {
+            var account = await _accountService.GetMyInfoAsync();
+            if (account == null)
+            {
+                return NotFound();
+            }
+            return Ok(new ApiResponse<AccountResponse>(1000, "Success", account));
         }
     }
 }
