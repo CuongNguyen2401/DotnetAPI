@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyApiNetCore8.Data;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Model;
+using System.Linq;
 
 namespace MyApiNetCore8.Repositories.impl
 {
@@ -16,15 +17,33 @@ namespace MyApiNetCore8.Repositories.impl
             _context = context;
             _mapper = mapper;
         }
-        public async Task<CouponResponse> CreateCoupon(CouponRequest coupon)
+        public async Task<CouponResponse> CreateGlobalCoupon(CouponRequest couponRequest)
         {
-            var couponEntity = _mapper.Map<Coupon>(coupon);
-           
-            _context.Add(couponEntity);
+            // Assuming _context is an instance of AppDbContext and _couponMapper is an instance of a class that maps between entities and DTOs
+            Coupon coupon = _mapper.Map<Coupon>(couponRequest);
+            coupon.code = Guid.NewGuid().ToString();
+            coupon.isGlobal = true;
+
+            List<string> userIds = couponRequest.userIds;
+
+            if (userIds != null && userIds.Any())
+            {
+            
+                var users = await _context.Users.Where(u => userIds.Contains(u.Id)).ToListAsync();
+                foreach (var user in users)
+                {
+                    user.coupons.Add(coupon);
+                }
+                coupon.users = new HashSet<User>(users);
+            }
+
+    
+            await _context.Coupons.AddAsync(coupon);
             await _context.SaveChangesAsync();
-            return _mapper.Map<CouponResponse>(couponEntity);
-            throw new NotImplementedException();
+
+            return _mapper.Map<CouponResponse>(coupon);
         }
+
 
 
         public async Task DeleteCoupon(long[] ids)
@@ -32,30 +51,37 @@ namespace MyApiNetCore8.Repositories.impl
             // Convert array to list for LINQ operations
             List<long> idList = ids.ToList();
 
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            // Use the execution strategy to execute the transactional operations
+            var executionStrategy = _context.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () =>
             {
-                try
+                // Start a new transaction
+                using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    await DeleteUserCouponsByCouponIds(idList);
+                    try
+                    {
+                        await DeleteUserCouponsByCouponIds(idList);
 
-                    var couponsToDelete = await _context.Coupons.Where(c => idList.Contains(c.id)).ToListAsync();
-                    _context.Coupons.RemoveRange(couponsToDelete);
-                    await _context.SaveChangesAsync();
+                        var couponsToDelete = await _context.Coupons.Where(c => idList.Contains(c.id)).ToListAsync();
+                        _context.Coupons.RemoveRange(couponsToDelete);
+                        await _context.SaveChangesAsync();
 
-                    await transaction.CommitAsync();
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception)
+                    {
+                        // Rollback is handled by the execution strategy if needed
+                        throw;
+                    }
                 }
-                catch (Exception)
-                {
-                    await transaction.RollbackAsync();
-                    throw; 
-                }
-            }
+            });
         }
+
 
         private async Task DeleteUserCouponsByCouponIds(List<long> ids)
         {
             var idListString = string.Join(",", ids);
-            var sql = $"DELETE FROM user_coupons WHERE coupon_id IN ({idListString})";
+            var sql = $"DELETE FROM usercoupon WHERE couponsid IN ({idListString})";
             await _context.Database.ExecuteSqlRawAsync(sql);
         }
 
@@ -81,13 +107,7 @@ namespace MyApiNetCore8.Repositories.impl
             return dateTime >= (DateTime)System.Data.SqlTypes.SqlDateTime.MinValue &&
                    dateTime <= (DateTime)System.Data.SqlTypes.SqlDateTime.MaxValue;
         }
-        private string GenerateRandomCode(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
+
 
 
         public async Task<CouponResponse> GetCouponById(long id)
@@ -96,23 +116,6 @@ namespace MyApiNetCore8.Repositories.impl
             return _mapper.Map<CouponResponse>(coupon);
 
 
-        }
-
-        public async Task<CouponResponse> UpdateCoupon(long id, CouponRequest coupon)
-        {
-            var existingCoupon = await _context.Coupons.FindAsync(id);
-            if (existingCoupon == null)
-            {
-                throw new KeyNotFoundException($"Coupon with id {id} not found.");
-            }
-
-            _mapper.Map(coupon, existingCoupon);
-
-            _context.Coupons.Update(existingCoupon);
-
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<CouponResponse>(existingCoupon);
         }
 
         public async Task<CouponResponse> GetCouponByCode(string code)

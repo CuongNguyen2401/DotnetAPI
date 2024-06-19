@@ -15,5 +15,6 @@ namespace MyApiNetCore8.Model
         public Status status { get; set; }
 
         public List<Order> orders { get; set; }
+        public HashSet<Coupon> coupons { get; set; }
     }
 }

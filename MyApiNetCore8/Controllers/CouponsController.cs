@@ -21,19 +21,18 @@ namespace MyApiNetCore8.Controllers
         // GET: api/Coupons
         [HttpGet]
         [Authorize(Roles = AppRole.Admin)]
-        public async Task<ActionResult<ApiResponse<List<CouponResponse>>>> GetCoupon()
+        public async Task<ActionResult<ApiResponse<List<CouponResponse>>>> GetAllCoupons()
         {
-           
-                var couponResponses = await _service.GetAllCoupons();
-                return Ok(new ApiResponse<List<CouponResponse>>(1000, "Success", couponResponses));
-            
-            
+            var couponResponses = await _service.GetAllCoupons();
+            return Ok(new ApiResponse<List<CouponResponse>>(1000, "Success", couponResponses));
+
         }
 
 
 
         // GET: api/Coupons/5
         [HttpGet("{id}")]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<Coupon>> GetCoupon(long id)
         {
             var coupon = await _service.GetCouponById(id);
@@ -45,21 +44,20 @@ namespace MyApiNetCore8.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles = AppRole.Admin)]
-        public async Task<ActionResult<Coupon>> PostCoupon(CouponRequest coupon)
+        public async Task<ActionResult<Coupon>> CreateCoupon(CouponRequest coupon)
         {
-            var couponResponse = await _service.CreateCoupon(coupon);
+            var couponResponse = await _service.CreateGlobalCoupon(coupon);
             return CreatedAtAction("GetCoupon", new ApiResponse<CouponResponse>(1000, "Success", couponResponse));
 
         }
 
         // DELETE: api/Coupons/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCoupon(long[] ids)
+        [HttpDelete]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<IActionResult> DeleteCoupon([FromQuery] long[] ids)
         {
             await _service.DeleteCoupon(ids);
             return Ok(new ApiResponse<object>(1000, "Success", null));
-         
-
         }
         [HttpGet("code/{code}")]
         public async Task<ActionResult<CouponResponse>> GetCouponByCode(string code)
@@ -67,11 +65,8 @@ namespace MyApiNetCore8.Controllers
             var coupon = await _service.GetCouponByCode(code);
             return Ok(new ApiResponse<CouponResponse>(1000, "Success", coupon));
         }
-            
 
-        private bool CouponExists(long id)
-        {
-            return _service.GetCouponById(id) != null;
-        }
+
+        
     }
 }
