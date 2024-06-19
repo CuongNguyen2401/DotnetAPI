@@ -16,25 +16,25 @@ namespace MyApiNetCore8.Controllers
         private readonly IOrderService _orderService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
-        
-        
-        
-        public OrdersController(IOrderService orderService, IHttpContextAccessor httpContextAccessor,UserManager<User> userManager)
+
+
+
+        public OrdersController(IOrderService orderService, IHttpContextAccessor httpContextAccessor, UserManager<User> userManager)
         {
             _orderService = orderService;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
         }
-        
+
         [HttpPost]
         [Authorize(Roles = AppRole.User)]
         public async Task<ActionResult<ApiResponse<OrderResponse>>> CreateOrder(OrderRequest orderRequest)
         {
             var orderResponse = await _orderService.CreateOrder(orderRequest);
-            return  Ok(new ApiResponse<OrderResponse>(1000, "Success", orderResponse));
+            return Ok(new ApiResponse<OrderResponse>(1000, "Success", orderResponse));
         }
-        
-        
+
+
         [HttpGet]
         [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<ApiResponse<List<OrderResponse>>>> GetAllOrders()
@@ -42,7 +42,7 @@ namespace MyApiNetCore8.Controllers
             var orderResponses = await _orderService.GetAllOrdersAsync();
             return Ok(new ApiResponse<List<OrderResponse>>(1000, "Success", orderResponses));
         }
-        
+
         [HttpGet("{orderId}")]
         [Authorize(Roles = AppRole.User)]
         public async Task<ActionResult<ApiResponse<OrderResponse>>> GetOrder(long orderId)
@@ -50,9 +50,9 @@ namespace MyApiNetCore8.Controllers
             var orderResponse = await _orderService.GetOrderAsync(orderId);
             return Ok(new ApiResponse<OrderResponse>(1000, "Success", orderResponse));
         }
-        
-        
-        
+
+
+
         [HttpGet("user")]
         [Authorize(Roles = AppRole.User)]
         public async Task<ActionResult<ApiResponse<List<OrderResponse>>>> GetAllOrdersByUser()
@@ -62,6 +62,22 @@ namespace MyApiNetCore8.Controllers
             var orderResponses = await _orderService.GetAllOrdersByUserAsync(user.Id);
             return Ok(new ApiResponse<List<OrderResponse>>(1000, "Success", orderResponses));
         }
-    }  
+
+        [HttpGet("monthly-sales")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<ActionResult<ApiResponse<List<MonthlySalesOrderResponse>>>> GetMonthlySales()
+        {
+            var monthlySales = await _orderService.GetMonthlySalesUpToCurrentMonthAsync();
+            return Ok(new ApiResponse<List<MonthlySalesOrderResponse>>(1000, "Success", monthlySales));
+        }
+
+        [HttpGet("daily-sales")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<ActionResult<ApiResponse<int>>> GetOrdersSoldToday()
+        {
+            var ordersSoldToday = await _orderService.GetOrdersSoldTodayAsync();
+            return Ok(new ApiResponse<int>(1000, "Success", ordersSoldToday));
+        }
+    }
 }
 

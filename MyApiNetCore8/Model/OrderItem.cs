@@ -11,12 +11,12 @@ namespace MyApiNetCore8.Model
         
         [Required] public int quantity { get; set; }
         
-        public long order_id { get; set; }
+        public long orderId { get; set; }
         
-        [ForeignKey("order_id")] public Order Order { get; set; }
+        [ForeignKey("orderId")] public Order Order { get; set; }
         
         public long productId { get; set; }
         
-        [ForeignKey("product_id")] public Product product { get; set; }
+        [ForeignKey("productId")] public Product product { get; set; }
     }
 }

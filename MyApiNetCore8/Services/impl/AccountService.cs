@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using MyApiNetCore8.DTO.Response;
+using MyApiNetCore8.Enums;
 
 namespace MyApiNetCore8.Repositories.impl
 {
@@ -72,7 +73,8 @@ namespace MyApiNetCore8.Repositories.impl
                 lastName = model.lastName,
                 Email = model.email,
                 UserName = model.userName,
-                dateOfBirth = model.Dob.Date
+                dateOfBirth = model.Dob.Date,
+                gender = model.gender,
             };
 
             var result = await userManager.CreateAsync(user, model.password);

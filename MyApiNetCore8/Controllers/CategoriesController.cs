@@ -29,7 +29,7 @@ namespace MyApiNetCore8.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResponse<List<CategoryResponse>>>> GetAllCategory()
         {
-            return new ApiResponse<List<CategoryResponse>>(200, "Success", await _categoryService.GetAllCategoriesAsync());
+            return new ApiResponse<List<CategoryResponse>>(1000, "Success", await _categoryService.GetAllCategoriesAsync());
 
         }
 
@@ -38,7 +38,7 @@ namespace MyApiNetCore8.Controllers
         public async Task<ActionResult<ApiResponse<CategoryResponse>>> PostCategory(CategoryRequest category)
         {
             var categoryResponse = await _categoryService.CreateCategoryAsync(category);
-            return Ok(new ApiResponse<CategoryResponse>(200, "Success", categoryResponse));
+            return Ok(new ApiResponse<CategoryResponse>(1000, "Success", categoryResponse));
 
         }
 
@@ -46,7 +46,7 @@ namespace MyApiNetCore8.Controllers
         public async Task<ActionResult<ApiResponse<int>>> GetTotalProductQuantity(string categoryName)
         {
             int totalQuantity = await _categoryService.GetTotalProductQuantityByCategoryNameAsync(categoryName);
-            return Ok(new ApiResponse<int>(200, "Success", totalQuantity));
+            return Ok(new ApiResponse<int>(1000, "Success", totalQuantity));
         }
 
         [HttpDelete]
@@ -76,7 +76,7 @@ namespace MyApiNetCore8.Controllers
                 return NotFound();
             }
 
-            return Ok(new ApiResponse<CategoryResponse>(200, "Success", category));
+            return Ok(new ApiResponse<CategoryResponse>(1000, "Success", category));
         }
 
         [HttpPut]
@@ -89,7 +89,7 @@ namespace MyApiNetCore8.Controllers
             }
 
             var updatedCategory = await _categoryService.UpdateCategoryAsync(category);
-            return Ok(new ApiResponse<CategoryResponse>(200, "Success", updatedCategory));
+            return Ok(new ApiResponse<CategoryResponse>(1000, "Success", updatedCategory));
         }
 
 

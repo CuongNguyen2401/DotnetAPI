@@ -11,35 +11,47 @@ namespace MyApiNetCore8.Helper
         //    .ForMember(dest => dest.Category, opt => opt.Ignore());
         public ApplicationMapper()
         {
+            //Product Map
             CreateMap<Product, ProductResponse>()
-            .ForMember(dest => dest.category, opt => opt.MapFrom(src => src.Category))
-            .ForMember(dest => dest.productStatus, opt => opt.MapFrom(src => src.status))
-            .ReverseMap()
-            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.category))
-            .ForMember(dest => dest.status, opt => opt.MapFrom(src => src.productStatus));
-
-
+                .ForMember(dest => dest.category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.productStatus, opt => opt.MapFrom(src => src.status))
+                    .ReverseMap()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.category))
+                .ForMember(dest => dest.status, opt => opt.MapFrom(src => src.productStatus));
             CreateMap<ProductRequest, Product>().ReverseMap();
+            //Product Map
 
-            CreateMap<CategoryRequest, Category>().ReverseMap();
+            //Category Map
+            CreateMap<Category, CategoryRequest>().ReverseMap();
             CreateMap<Category, CategoryResponse>().ReverseMap();
+            //Category Map
 
+            //Coupon Map
             CreateMap<Coupon, CouponResponse>().ReverseMap();
-            CreateMap<CouponRequest, Coupon>().ReverseMap();
+            CreateMap<Coupon, CouponRequest>().ReverseMap();
+            //Coupon Map
 
-            CreateMap<OrderRequest, Order>().ReverseMap();
+            //Order Map
+            CreateMap<Order, OrderRequest>().ReverseMap();
             CreateMap<Order, OrderResponse>().ReverseMap();
-            CreateMap<OrderItemRequest, OrderItem>().ReverseMap();
-            CreateMap<OrderItem, OrderItemResponse>().ReverseMap();
+            //Order Map
 
+            //OrderItem Map
+            CreateMap<OrderItem, OrderItemRequest>().ReverseMap();
+            CreateMap<OrderItem, OrderItemResponse>()
+                .ForMember(dest => dest.productName, opt => opt.MapFrom(src => src.product.name))
+                .ForMember(dest => dest.image, opt => opt.MapFrom(src => src.product.image))
+                    .ReverseMap();
+            CreateMap<OrderItem, BestSellingProductResponse>()
+                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.product));
+            CreateMap<OrderItem, CategoryRevenueResponse>();
+            //OrderItem Map
+
+            //User Map
             CreateMap<User, AccountResponse>()
                 .ForMember(dest => dest.email, opt => opt.MapFrom(src => src.Email))
                 .ReverseMap();
-
-            CreateMap<OrderItem, BestSellingProductResponse>()
-                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.product));
-
-            CreateMap<OrderItem, CategoryRevenueResponse>();
+            //User Map
         }
     }
 }
