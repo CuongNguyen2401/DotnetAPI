@@ -7,12 +7,13 @@ using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Model;
 using MyApiNetCore8.Repository;
+using MyApiNetCore8.Enums;
 
 namespace MyApiNetCore8.Repository.impl
 {
     public class ProductService : IProductService
     {
-     
+
 
         private readonly MyContext _context;
         private readonly IMapper _mapper;
@@ -62,7 +63,7 @@ namespace MyApiNetCore8.Repository.impl
         public async Task<List<ProductResponse>> FindSalesProduct()
         {
             var products = await _context.Product
-                .Include(p=>p.Category)
+                .Include(p => p.Category)
                 .Where(p => p.salePrice < p.price)
                 .ToListAsync();
 
@@ -145,20 +146,20 @@ namespace MyApiNetCore8.Repository.impl
 
         public async Task<List<ProductResponse>> FindLimitedProductsByCategory(string categoryName, int limit)
         {
-          var products = await _context.Product
-                .Include(m => m.Category)
-                .Where(p => p.Category.name == categoryName)
-                .Take(limit)
-                .ToListAsync();
+            var products = await _context.Product
+                  .Include(m => m.Category)
+                  .Where(p => p.Category.name == categoryName)
+                  .Take(limit)
+                  .ToListAsync();
             return _mapper.Map<List<ProductResponse>>(products);
         }
 
         public async Task<List<ProductResponse>> FindByCategory(string categoryName)
         {
-          var products = await _context.Product
-                .Include(m => m.Category)
-                .Where(p => p.Category.name == categoryName)
-                .ToListAsync();
+            var products = await _context.Product
+                  .Include(m => m.Category)
+                  .Where(p => p.Category.name == categoryName)
+                  .ToListAsync();
             return _mapper.Map<List<ProductResponse>>(products);
         }
 
@@ -214,10 +215,10 @@ namespace MyApiNetCore8.Repository.impl
 
         public async Task<ProductResponse> GetProductBySlug(string slug)
         {
-            var product =  await _context.Product
+            var product = await _context.Product
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.slug == slug);
-    
+
             return _mapper.Map<ProductResponse>(product);
         }
 
@@ -228,6 +229,40 @@ namespace MyApiNetCore8.Repository.impl
                 .Where(p => ids.Contains(p.id))
                 .ToListAsync();
             return _mapper.Map<List<ProductResponse>>(products);
+        }
+
+        public async Task<BestSellingProductResponse> GetBestSellingProductsAsync()
+        {
+            var bestSellingProducts = await _context.OrderItem
+                .Include(od => od.product)
+                .ThenInclude(p => p.Category)
+                .GroupBy(od => od.product)
+                .Select(g => new BestSellingProductResponse
+                {
+                    Product = _mapper.Map<ProductResponse>(g.First().product),
+                    TotalQuantitySold = g.Sum(od => od.quantity)
+                })
+                .OrderByDescending(p => p.TotalQuantitySold)
+                .FirstOrDefaultAsync();
+
+            return bestSellingProducts;
+        }
+
+        public async Task<List<CategoryRevenueResponse>> GetTotalRevenueByCategoryAsync(DateTime startDate, DateTime endDate)
+        {
+            var categoryRevenues = await _context.OrderItem
+                .Include(oi => oi.product)
+                .ThenInclude(p => p.Category)
+                .Where(oi => oi.Order.CreatedDate >= startDate && oi.Order.CreatedDate <= endDate)
+                .GroupBy(oi => oi.product.Category)
+                .Select(g => new CategoryRevenueResponse
+                {
+                    categoryName = g.Key.name,
+                    totalRevenue = g.Sum(oi => oi.price * oi.quantity)
+                })
+                .ToListAsync();
+
+            return categoryRevenues;
         }
     }
 }
