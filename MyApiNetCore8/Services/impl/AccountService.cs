@@ -45,19 +45,19 @@ namespace MyApiNetCore8.Repositories.impl
 
         public async Task<(string, string)> SignInAsync(SignInModel model)
         {
-            var user = await userManager.FindByNameAsync(model.userName);
+            var user = await userManager.FindByNameAsync(model.username);
             if (user == null || !await userManager.CheckPasswordAsync(user, model.password))
             {
                 return (string.Empty, string.Empty);
             }
 
-            var result = await signInManager.PasswordSignInAsync(model.userName, model.password, false, false);
+            var result = await signInManager.PasswordSignInAsync(model.username, model.password, false, false);
             if (!result.Succeeded)
             {
                 return (string.Empty, string.Empty);
             }
 
-            var token = await GenerateTokenAsync(user, model.userName);
+            var token = await GenerateTokenAsync(user, model.username);
             var refreshToken = GenerateRefreshToken();
             await StoreRefreshTokenAsync(user, refreshToken);
 
@@ -200,6 +200,42 @@ namespace MyApiNetCore8.Repositories.impl
 
             await context.RefreshTokens.AddAsync(refreshTokenEntity);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<List<AccountResponse>> GetAllCustomersAsync()
+        {
+            var users = userManager.Users.ToList();
+            var customers = new List<AccountResponse>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                if (roles.Contains(AppRole.User))
+                {
+                    var customer = mapper.Map<AccountResponse>(user);
+                    customers.Add(customer);
+                }
+            }
+
+            return customers;
+        }
+
+        public async Task<List<AccountResponse>> GetAllSystemUsersAsync()
+        {
+            var users = userManager.Users.ToList();
+            var customers = new List<AccountResponse>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                if (roles.Contains(AppRole.Admin) || roles.Contains(AppRole.Staff))
+                {
+                    var customer = mapper.Map<AccountResponse>(user);
+                    customers.Add(customer);
+                }
+            }
+
+            return customers;
         }
 
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)

@@ -11,6 +11,10 @@ namespace MyApiNetCore8.Repositories
         Task<(string, string)> RefreshTokenAsync(string token, string refreshToken); 
 
         Task<AccountResponse> GetMyInfoAsync();
+        
+        Task<List<AccountResponse>> GetAllCustomersAsync();
+        
+        Task<List<AccountResponse>> GetAllSystemUsersAsync();
 
     }
 }

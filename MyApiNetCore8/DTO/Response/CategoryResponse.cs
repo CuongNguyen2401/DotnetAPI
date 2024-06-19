@@ -7,9 +7,10 @@ namespace MyApiNetCore8.DTO.Response
 {
     public class CategoryResponse : BaseEntity
     {
+        public long id { get; set; }
         public string name { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Status status { get; set; }
-        public string Description { get; set; }
+        public string description { get; set; }
     }
 }

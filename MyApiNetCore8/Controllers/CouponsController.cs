@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyApiNetCore8.DTO.Response;
+using MyApiNetCore8.Helper;
 using MyApiNetCore8.Model;
 using MyApiNetCore8.Repositories;
 
 namespace MyApiNetCore8.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class CouponsController : ControllerBase
     {
@@ -18,6 +20,7 @@ namespace MyApiNetCore8.Controllers
 
         // GET: api/Coupons
         [HttpGet]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<ApiResponse<List<CouponResponse>>>> GetCoupon()
         {
            
@@ -41,6 +44,7 @@ namespace MyApiNetCore8.Controllers
         // POST: api/Coupons
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<Coupon>> PostCoupon(CouponRequest coupon)
         {
             var couponResponse = await _service.CreateCoupon(coupon);
@@ -50,16 +54,20 @@ namespace MyApiNetCore8.Controllers
 
         // DELETE: api/Coupons/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCoupon(long id)
+        public async Task<IActionResult> DeleteCoupon(long[] ids)
         {
-           var coupon = await _service.GetCouponById(id);
-            if (coupon == null)
-            {
-                return NotFound();
-            }
-            _service.DeleteCoupon(id);
+            await _service.DeleteCoupon(ids);
+            return Ok(new ApiResponse<object>(1000, "Success", null));
+         
+
+        }
+        [HttpGet("code/{code}")]
+        public async Task<ActionResult<CouponResponse>> GetCouponByCode(string code)
+        {
+            var coupon = await _service.GetCouponByCode(code);
             return Ok(new ApiResponse<CouponResponse>(1000, "Success", coupon));
         }
+            
 
         private bool CouponExists(long id)
         {

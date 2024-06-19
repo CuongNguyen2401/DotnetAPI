@@ -1,3 +1,4 @@
+using System.Net;
 using CloudinaryDotNet;
 using Microsoft.EntityFrameworkCore;
 using MyApiNetCore8.Data;
@@ -24,7 +25,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        builder => builder.WithOrigins("*") // Corrected origin URL
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+           
+         
+});
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<MyContext>().AddDefaultTokenProviders();
@@ -95,6 +106,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowReactApp");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

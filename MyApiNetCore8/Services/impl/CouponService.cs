@@ -27,12 +27,39 @@ namespace MyApiNetCore8.Repositories.impl
         }
 
 
-        public void DeleteCoupon(long id)
+        public async Task DeleteCoupon(long[] ids)
         {
-            var coupon = _context.Coupons.Find(id);
-            _context.Coupons.Remove(coupon);
-            _context.SaveChanges();
+            // Convert array to list for LINQ operations
+            List<long> idList = ids.ToList();
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    await DeleteUserCouponsByCouponIds(idList);
+
+                    var couponsToDelete = await _context.Coupons.Where(c => idList.Contains(c.id)).ToListAsync();
+                    _context.Coupons.RemoveRange(couponsToDelete);
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw; 
+                }
+            }
         }
+
+        private async Task DeleteUserCouponsByCouponIds(List<long> ids)
+        {
+            var idListString = string.Join(",", ids);
+            var sql = $"DELETE FROM user_coupons WHERE coupon_id IN ({idListString})";
+            await _context.Database.ExecuteSqlRawAsync(sql);
+        }
+
+
 
         public async Task<List<CouponResponse>> GetAllCoupons()
         {
@@ -88,5 +115,16 @@ namespace MyApiNetCore8.Repositories.impl
             return _mapper.Map<CouponResponse>(existingCoupon);
         }
 
+        public async Task<CouponResponse> GetCouponByCode(string code)
+        {
+            var coupon = await _context.Coupons.FirstOrDefaultAsync(c => c.code == code);
+            if (coupon == null)
+            {
+                throw new KeyNotFoundException($"Coupon with code {code} not found.");
+            }
+            return _mapper.Map<CouponResponse>(coupon);
+        }
+
+        
     }
 }

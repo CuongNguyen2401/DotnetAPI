@@ -8,7 +8,8 @@ namespace MyApiNetCore8.Repositories
         Task<CouponResponse> GetCouponById(long id);
         Task<CouponResponse> CreateCoupon(CouponRequest coupon);
         Task<CouponResponse> UpdateCoupon(long id, CouponRequest coupon);
-        void DeleteCoupon(long id);
+        Task DeleteCoupon(long[] ids);
+        Task<CouponResponse> GetCouponByCode(string code);
 
 
     }

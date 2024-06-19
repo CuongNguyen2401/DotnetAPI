@@ -4,6 +4,7 @@ namespace MyApiNetCore8.DTO.Response;
 
 public class OrderResponse
 {
+    public long id { get; set; }
     public string customerName { get; set; }
     public string email { get; set; }
     public string phoneNumber { get; set; }
