@@ -54,14 +54,17 @@ public class OrderService : IOrderService
         savedOrder.user = user;
 
         _context.Order.Add(savedOrder);
-         await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         return _mapper.Map<OrderResponse>(savedOrder);
     }
 
     public async Task<List<OrderResponse>> GetAllOrdersByUserAsync(string userId)
     {
-        var orders = await _context.Order.Where(o => o.user.Id == userId).ToListAsync();
+        var orders = await _context.Order.Where(o => o.user.Id == userId)
+                                        .Include(o => o.orderItems)
+                                        .ThenInclude(oi => oi.product)
+                                        .ToListAsync();
         return _mapper.Map<List<OrderResponse>>(orders);
     }
 
@@ -78,7 +81,10 @@ public class OrderService : IOrderService
 
     public async Task<List<OrderResponse>> GetAllOrdersAsync()
     {
-        var orders = await _context.Order.ToListAsync();
+        var orders = await _context.Order
+                            .Include(o => o.orderItems)
+                            .ThenInclude(oi => oi.product)
+                            .ToListAsync();
         return _mapper.Map<List<OrderResponse>>(orders);
     }
 
@@ -116,5 +122,43 @@ public class OrderService : IOrderService
     private double CalculateItemTotal(OrderItem orderItem)
     {
         return orderItem.quantity * orderItem.price;
+    }
+
+    public async Task<List<MonthlySalesOrderResponse>> GetMonthlySalesUpToCurrentMonthAsync()
+    {
+        var currentYear = DateTime.UtcNow.Year;
+        var currentMonth = DateTime.UtcNow.Month;
+
+        var monthlySales = await _context.Order
+            .Where(o => o.CreatedDate.Year == currentYear && o.CreatedDate.Month <= currentMonth)
+            .GroupBy(o => new { o.CreatedDate.Year, o.CreatedDate.Month })
+            .Select(g => new
+            {
+                g.Key.Year,
+                g.Key.Month,
+                Sales = g.Sum(o => o.totalPay)
+            })
+            .OrderBy(g => g.Year).ThenBy(g => g.Month)
+            .ToListAsync();
+
+        var result = monthlySales
+            .Select(ms => new MonthlySalesOrderResponse
+            {
+                month = new DateTime(ms.Year, ms.Month, 1).ToString("MMMM"),
+                sales = ms.Sales
+            })
+            .ToList();
+
+        return result;
+    }
+
+    public async Task<int> GetOrdersSoldTodayAsync()
+    {
+        DateTime currentDate = DateTime.UtcNow.Date;
+
+        int ordersSoldToday = await _context.Order
+            .CountAsync(o => o.CreatedDate >= currentDate && o.CreatedDate < currentDate.AddDays(1));
+
+        return ordersSoldToday;
     }
 }

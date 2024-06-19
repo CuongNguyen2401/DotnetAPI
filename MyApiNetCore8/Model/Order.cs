@@ -25,7 +25,7 @@ namespace MyApiNetCore8.Model
         
         public virtual ICollection<OrderItem> orderItems { get; set; } = new HashSet<OrderItem>();
 
-        public int userId { get; set; }
+        public string user_id { get; set; }
         
         [ForeignKey("user_id")] public virtual User user { get; set; }
     }

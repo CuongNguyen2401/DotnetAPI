@@ -1,4 +1,5 @@
 ﻿using MyApiNetCore8.Enums;
+using System.Text.Json.Serialization;
 
 namespace MyApiNetCore8.DTO.Response;
 
@@ -11,6 +12,7 @@ public class OrderResponse
     public string address { get; set; }
     public double totalPay { get; set; }
     public string note { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public OrderStatus orderStatus { get; set; }
 
     // public CouponResponse cou { get; set; }
