@@ -35,6 +35,11 @@ namespace MyApiNetCore8.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                    .HasMany(u => u.coupons)
+                    .WithMany(c => c.users)
+                    .UsingEntity(j => j.ToTable("UserCoupon"));
+
             base.OnModelCreating(modelBuilder);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
