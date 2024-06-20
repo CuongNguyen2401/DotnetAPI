@@ -231,7 +231,7 @@ namespace MyApiNetCore8.Repository.impl
             return _mapper.Map<List<ProductResponse>>(products);
         }
 
-        public async Task<BestSellingProductResponse> GetBestSellingProductsAsync()
+        public async Task<List<BestSellingProductResponse>> GetBestSellingProductsAsync()
         {
             var bestSellingProducts = await _context.OrderItem
                 .Include(od => od.product)
@@ -242,8 +242,7 @@ namespace MyApiNetCore8.Repository.impl
                     Product = _mapper.Map<ProductResponse>(g.First().product),
                     TotalQuantitySold = g.Sum(od => od.quantity)
                 })
-                .OrderByDescending(p => p.TotalQuantitySold)
-                .FirstOrDefaultAsync();
+                .OrderByDescending(p => p.TotalQuantitySold).ToListAsync();
 
             return bestSellingProducts;
         }

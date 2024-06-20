@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.DTO.Response;
+using MyApiNetCore8.Enums;
 using MyApiNetCore8.Helper;
 using MyApiNetCore8.Model;
 using MyApiNetCore8.Services;
@@ -77,6 +78,37 @@ namespace MyApiNetCore8.Controllers
         {
             var ordersSoldToday = await _orderService.GetOrdersSoldTodayAsync();
             return Ok(new ApiResponse<int>(1000, "Success", ordersSoldToday));
+        }
+
+        [HttpGet("monthly-sales-revenue")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<ActionResult<ApiResponse<double>>> GetMonthlySalesRevenue()
+        {
+            var revenue = await _orderService.GetMonthlySalesRevenueAsync();
+
+            return Ok(new ApiResponse<double>(1000, "Success", revenue));
+        }
+
+        [HttpGet("yearly-sales-revenue")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<ActionResult<ApiResponse<double>>> GetYearlySalesRevenue()
+        {
+            var revenue = await _orderService.GetYearlySalesRevenueAsync();
+
+            return Ok(new ApiResponse<double>(1000, "Success", revenue));
+        }
+
+        [HttpPut("{orderId}/status")]
+        public async Task<ActionResult<ApiResponse<OrderResponse>>> UpdateOrderStatus(long orderId, [FromQuery] OrderStatus status)
+        {
+            var orderResponse = await _orderService.UpdateOrderStatusAsync(orderId, status);
+
+            if (orderResponse == null)
+            {
+                return NotFound(new ApiResponse<string>(1000, "Order not found", null));
+            }
+
+            return Ok(new ApiResponse<OrderResponse>(1000, "Success", orderResponse));
         }
     }
 }

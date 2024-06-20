@@ -23,7 +23,7 @@ namespace MyApiNetCore8.Repository
 
         Task<List<ProductResponse>> getListProductsByIds(List<long> ids);
 
-        Task<BestSellingProductResponse> GetBestSellingProductsAsync();
+        Task<List<BestSellingProductResponse>> GetBestSellingProductsAsync();
 
         Task<List<CategoryRevenueResponse>> GetTotalRevenueByCategoryAsync(DateTime startDate, DateTime endDate);
 

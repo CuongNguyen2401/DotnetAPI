@@ -164,10 +164,10 @@ namespace MyApiNetCore8.Controllers
 
         [HttpGet("most-sold")]
         [Authorize(Roles = AppRole.Admin)]
-        public async Task<ApiResponse<BestSellingProductResponse>> GetBestSellingProducts()
+        public async Task<ApiResponse<List<BestSellingProductResponse>>> GetBestSellingProducts()
         {
             var result = await _productService.GetBestSellingProductsAsync();
-            var response = new ApiResponse<BestSellingProductResponse>(1000, "Success", result);
+            var response = new ApiResponse<List<BestSellingProductResponse>>(1000, "Success", result);
             return response;
         }
 

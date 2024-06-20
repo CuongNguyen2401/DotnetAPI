@@ -1,7 +1,4 @@
-﻿using MyApiNetCore8.DTO.Request;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using MyApiNetCore8.DTO.Request;
+﻿using System.ComponentModel.DataAnnotations;
 namespace MyApiNetCore8.DTO.Request
 
 {
