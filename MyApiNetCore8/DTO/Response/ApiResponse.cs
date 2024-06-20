@@ -13,8 +13,6 @@ namespace MyApiNetCore8.DTO.Response
         [JsonPropertyName("result")]
         public T Result { get; set; }
 
-        public ApiResponse(int v) { }
-
         public ApiResponse(int code, string message, T result)
         {
             Code = code;

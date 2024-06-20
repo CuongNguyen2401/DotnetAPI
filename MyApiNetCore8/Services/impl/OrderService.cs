@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyApiNetCore8.Data;
@@ -160,5 +161,44 @@ public class OrderService : IOrderService
             .CountAsync(o => o.CreatedDate >= currentDate && o.CreatedDate < currentDate.AddDays(1));
 
         return ordersSoldToday;
+    }
+
+    public async Task<double> GetMonthlySalesRevenueAsync()
+    {
+        var startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        var endDate = startDate.AddMonths(1);
+
+        var totalRevenue = await _context.Order
+            .Where(o => o.orderStatus == OrderStatus.DELIVERED && o.CreatedDate >= startDate && o.CreatedDate < endDate)
+            .SumAsync(o => o.totalPay);
+
+        return totalRevenue;
+    }
+    public async Task<double> GetYearlySalesRevenueAsync()
+    {
+        var startDate = new DateTime(DateTime.Now.Year, 1, 1);
+        var endDate = startDate.AddYears(1);
+
+        var totalRevenue = await _context.Order
+            .Where(o => o.orderStatus == OrderStatus.DELIVERED && o.CreatedDate >= startDate && o.CreatedDate < endDate)
+            .SumAsync(o => o.totalPay);
+
+        return totalRevenue;
+    }
+
+    public async Task<OrderResponse> UpdateOrderStatusAsync(long orderId, OrderStatus status)
+    {
+        var order = await _context.Order
+               .Include(o => o.orderItems)
+               .ThenInclude(o=>o.product)
+               .FirstOrDefaultAsync(o => o.id == orderId);
+        if (order == null)
+        {
+            return null;
+        }
+        order.orderStatus = status;
+        _context.Order.Update(order);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<OrderResponse>(order);
     }
 }
