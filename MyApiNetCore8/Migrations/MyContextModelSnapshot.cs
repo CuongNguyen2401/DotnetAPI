@@ -310,9 +310,6 @@ namespace MyApiNetCore8.Migrations
                     b.Property<double>("totalPay")
                         .HasColumnType("double");
 
-                    b.Property<int>("userId")
-                        .HasColumnType("int");
-
                     b.Property<string>("user_id")
                         .HasColumnType("varchar(255)");
 
@@ -347,7 +344,7 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("SYSDATE()");
 
-                    b.Property<long>("order_id")
+                    b.Property<long>("orderId")
                         .HasColumnType("bigint");
 
                     b.Property<double>("price")
@@ -356,17 +353,14 @@ namespace MyApiNetCore8.Migrations
                     b.Property<long>("productId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("product_id")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("quantity")
                         .HasColumnType("int");
 
                     b.HasKey("id");
 
-                    b.HasIndex("order_id");
+                    b.HasIndex("orderId");
 
-                    b.HasIndex("product_id");
+                    b.HasIndex("productId");
 
                     b.ToTable("OrderItem");
                 });
@@ -395,7 +389,7 @@ namespace MyApiNetCore8.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("SYSDATE()");
 
-                    b.Property<long?>("category_id")
+                    b.Property<long>("category_id")
                         .HasColumnType("bigint");
 
                     b.Property<string>("description")
@@ -476,8 +470,11 @@ namespace MyApiNetCore8.Migrations
 
             modelBuilder.Entity("MyApiNetCore8.Model.RefreshToken", b =>
                 {
-                    b.Property<string>("Token")
-                        .HasColumnType("varchar(255)");
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("id"));
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
@@ -485,7 +482,10 @@ namespace MyApiNetCore8.Migrations
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("Token");
+                    b.Property<string>("Token")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("id");
 
                     b.ToTable("RefreshTokens");
                 });
@@ -554,8 +554,9 @@ namespace MyApiNetCore8.Migrations
                     b.Property<string>("firstName")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("gender")
-                        .HasColumnType("int");
+                    b.Property<string>("gender")
+                        .IsRequired()
+                        .HasColumnType("ENUM('FEMALE', 'MALE', 'OTHER')");
 
                     b.Property<string>("lastName")
                         .HasColumnType("longtext");
@@ -654,13 +655,15 @@ namespace MyApiNetCore8.Migrations
                 {
                     b.HasOne("MyApiNetCore8.Model.Order", "Order")
                         .WithMany("orderItems")
-                        .HasForeignKey("order_id")
+                        .HasForeignKey("orderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MyApiNetCore8.Model.Product", "product")
                         .WithMany("OrderItems")
-                        .HasForeignKey("product_id");
+                        .HasForeignKey("productId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
 
@@ -671,7 +674,9 @@ namespace MyApiNetCore8.Migrations
                 {
                     b.HasOne("MyApiNetCore8.Model.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("category_id");
+                        .HasForeignKey("category_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });

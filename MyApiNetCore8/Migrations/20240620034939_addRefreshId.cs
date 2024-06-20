@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyApiNetCore8.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class addRefreshId : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +43,8 @@ namespace MyApiNetCore8.Migrations
                     dateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     firstName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    gender = table.Column<int>(type: "int", nullable: false),
+                    gender = table.Column<string>(type: "ENUM('FEMALE', 'MALE', 'OTHER')", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     lastName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     address = table.Column<string>(type: "longtext", nullable: true)
@@ -136,14 +137,16 @@ namespace MyApiNetCore8.Migrations
                 name: "RefreshTokens",
                 columns: table => new
                 {
-                    Token = table.Column<string>(type: "varchar(255)", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Token = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Expires = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshTokens", x => x.Token);
+                    table.PrimaryKey("PK_RefreshTokens", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -293,7 +296,6 @@ namespace MyApiNetCore8.Migrations
                     phoneNumber = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     totalPay = table.Column<double>(type: "double", nullable: false),
-                    userId = table.Column<int>(type: "int", nullable: false),
                     user_id = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
@@ -333,7 +335,7 @@ namespace MyApiNetCore8.Migrations
                     salePrice = table.Column<double>(type: "double", nullable: false),
                     slug = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    category_id = table.Column<long>(type: "bigint", nullable: true),
+                    category_id = table.Column<long>(type: "bigint", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -348,7 +350,8 @@ namespace MyApiNetCore8.Migrations
                         name: "FK_Product_Category_category_id",
                         column: x => x.category_id,
                         principalTable: "Category",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -386,9 +389,8 @@ namespace MyApiNetCore8.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     price = table.Column<double>(type: "double", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
-                    order_id = table.Column<long>(type: "bigint", nullable: false),
+                    orderId = table.Column<long>(type: "bigint", nullable: false),
                     productId = table.Column<long>(type: "bigint", nullable: false),
-                    product_id = table.Column<long>(type: "bigint", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "SYSDATE()"),
@@ -400,16 +402,17 @@ namespace MyApiNetCore8.Migrations
                 {
                     table.PrimaryKey("PK_OrderItem", x => x.id);
                     table.ForeignKey(
-                        name: "FK_OrderItem_Order_order_id",
-                        column: x => x.order_id,
+                        name: "FK_OrderItem_Order_orderId",
+                        column: x => x.orderId,
                         principalTable: "Order",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItem_Product_product_id",
-                        column: x => x.product_id,
+                        name: "FK_OrderItem_Product_productId",
+                        column: x => x.productId,
                         principalTable: "Product",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -490,14 +493,14 @@ namespace MyApiNetCore8.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_order_id",
+                name: "IX_OrderItem_orderId",
                 table: "OrderItem",
-                column: "order_id");
+                column: "orderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_product_id",
+                name: "IX_OrderItem_productId",
                 table: "OrderItem",
-                column: "product_id");
+                column: "productId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_category_id",

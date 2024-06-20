@@ -8,8 +8,7 @@ namespace MyApiNetCore8.Repositories
     {
         Task<IdentityResult> SignUpAsync(SignUpModel model);
         Task<(string, string)> SignInAsync(SignInModel model);
-        Task<(string, string)> RefreshTokenAsync(string token, string refreshToken); 
-
+          Task<(string, string)> RefreshTokenAsync(string refreshToken);
         Task<AccountResponse> GetMyInfoAsync();
         
         Task<List<AccountResponse>> GetAllCustomersAsync();

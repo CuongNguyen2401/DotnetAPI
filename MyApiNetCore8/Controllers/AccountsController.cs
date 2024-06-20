@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
+using Microsoft.IdentityModel.Tokens;
 using MyApiNetCore8.DTO.Request;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Helper;
@@ -43,17 +44,17 @@ namespace MyApiNetCore8.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken(string token, string refreshToken)
+        public async Task<IActionResult> RefreshToken(string refreshToken)
         {
-            var (newToken, newRefreshToken) = await _accountService.RefreshTokenAsync(token, refreshToken);
-            if (string.IsNullOrEmpty(newToken))
+
+            var newRefreshToken = await _accountService.RefreshTokenAsync(refreshToken);
+            if (string.IsNullOrEmpty(newRefreshToken.Item2))
             {
                 return Unauthorized();
             }
-            return Ok(new { Token = newToken, RefreshToken = newRefreshToken });
+            return Ok(new ApiResponse<object>(1000, "Success", new { accessToken = newRefreshToken.Item1, refreshToken = newRefreshToken.Item2 }));
         }
-        
-        
+
         [HttpGet("me")]
         [Authorize]
         public async Task<ActionResult<ApiResponse<AccountResponse>>> GetMyInfo()
@@ -65,7 +66,7 @@ namespace MyApiNetCore8.Controllers
             }
             return Ok(new ApiResponse<AccountResponse>(1000, "Success", account));
         }
-        
+
         [HttpGet("customers")]
         [Authorize(Roles = AppRole.Admin + "," + AppRole.Staff)]
         public async Task<ActionResult<ApiResponse<List<AccountResponse>>>> GetAllCustomer()
@@ -73,7 +74,7 @@ namespace MyApiNetCore8.Controllers
             var customers = await _accountService.GetAllCustomersAsync();
             return Ok(new ApiResponse<List<AccountResponse>>(1000, "Success", customers));
         }
-        
+
         [HttpGet("admins")]
         [Authorize(Roles = AppRole.Admin)]
         public async Task<ActionResult<ApiResponse<List<AccountResponse>>>> GetAllSystemUsers()
@@ -81,8 +82,5 @@ namespace MyApiNetCore8.Controllers
             var customers = await _accountService.GetAllSystemUsersAsync();
             return Ok(new ApiResponse<List<AccountResponse>>(1000, "Success", customers));
         }
-        
-        
-        
     }
 }

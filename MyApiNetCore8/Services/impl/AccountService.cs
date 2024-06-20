@@ -12,6 +12,7 @@ using System.Text;
 using AutoMapper;
 using MyApiNetCore8.DTO.Response;
 using MyApiNetCore8.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace MyApiNetCore8.Repositories.impl
 {
@@ -59,8 +60,8 @@ namespace MyApiNetCore8.Repositories.impl
             }
 
             var token = await GenerateTokenAsync(user, model.username);
-            var refreshToken = GenerateRefreshToken();
-            await StoreRefreshTokenAsync(user, refreshToken);
+            var refreshToken = GenerateRefreshToken(user);
+            await StoreRefreshTokenAsync(refreshToken);
 
             return (token, refreshToken);
         }
@@ -91,59 +92,6 @@ namespace MyApiNetCore8.Repositories.impl
             return result;
         }
 
-        public async Task<(string, string)> RefreshTokenAsync(string token, string refreshToken)
-        {
-            // Validate the principal extracted from the token
-            var principal = GetPrincipalFromExpiredToken(token);
-            if (principal == null)
-            {
-                return (string.Empty, string.Empty);
-            }
-
-            // Extract the username from the principal
-            var userName = principal.Identity.Name;
-            if (string.IsNullOrEmpty(userName))
-            {
-                return (string.Empty, string.Empty);
-            }
-
-            // Find the user by username
-            var user = await userManager.FindByNameAsync(userName);
-            if (user == null)
-            {
-                return (string.Empty, string.Empty);
-            }
-
-            var storedRefreshToken = context.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken));
-            // Retrieve the stored refresh token
-            //var storedRefreshToken = user.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken) );
-            if (storedRefreshToken == null || storedRefreshToken.Expires <= DateTime.Now)
-            {
-                return (string.Empty, string.Empty);
-            }
-
-            // Generate a new access token
-            var newToken = await GenerateTokenAsync(user, userName);
-            if (string.IsNullOrEmpty(newToken))
-            {
-                return (string.Empty, string.Empty);
-            }
-
-            // Generate a new refresh token
-            var newRefreshToken = GenerateRefreshToken();
-            if (string.IsNullOrEmpty(newRefreshToken))
-            {
-                return (string.Empty, string.Empty);
-            }
-
-            // Store the new refresh token for the user
-            await StoreRefreshTokenAsync(user, newRefreshToken);
-
-            // Return the new access token and refresh token
-            return (newToken, newRefreshToken);
-        }
-
-
         private async Task<string> GenerateTokenAsync(User user, string userName)
         {
             var authClaims = new List<Claim>
@@ -163,7 +111,7 @@ namespace MyApiNetCore8.Repositories.impl
             var token = new JwtSecurityToken(
                 issuer: configuration["JWT:ValidIssuer"],
                 audience: configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddSeconds(10),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512Signature)
             );
@@ -171,6 +119,116 @@ namespace MyApiNetCore8.Repositories.impl
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        private string GenerateRefreshToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim("purpose", "refresh_token"),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) 
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var refreshToken = new JwtSecurityToken(
+                issuer: configuration["JWT:ValidIssuer"],
+                audience: configuration["JWT:ValidAudience"],
+                claims: claims,
+                expires: DateTime.Now.AddMonths(3),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(refreshToken);
+        }
+
+        public async Task<(string, string)> RefreshTokenAsync(string refreshToken)
+        {
+            var principal = GetPrincipalFromExpiredToken(refreshToken);
+            if (principal == null)
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            var userName = principal.Identity.Name;
+            if (string.IsNullOrEmpty(userName))
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            var user = await userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            var storedRefreshToken = await context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+            if (storedRefreshToken == null || storedRefreshToken.Expires <= DateTime.Now)
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            context.RefreshTokens.Remove(storedRefreshToken);
+            await context.SaveChangesAsync();
+
+            var newRefreshToken = GenerateRefreshToken(user);
+            var newToken = await GenerateTokenAsync(user, userName);
+
+            if (string.IsNullOrEmpty(newToken) || string.IsNullOrEmpty(newRefreshToken))
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            var refreshTokenEntity = new RefreshToken
+            {
+                Token = newRefreshToken,
+
+                Expires = DateTime.Now.AddMonths(3)
+            };
+
+            await context.RefreshTokens.AddAsync(refreshTokenEntity);
+            await context.SaveChangesAsync();
+
+            return (newToken, newRefreshToken);
+        }
+
+        private async Task StoreRefreshTokenAsync(string refreshToken)
+        {
+            var refreshTokenEntity = new RefreshToken
+            {
+                Token = refreshToken,
+                Expires = DateTime.Now.AddMonths(3)
+            };
+
+            await context.RefreshTokens.AddAsync(refreshTokenEntity);
+            await context.SaveChangesAsync();
+        }
+
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                ValidateLifetime = false // Allow expired tokens to be validated
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+
+            if (securityToken is JwtSecurityToken jwtSecurityToken &&
+                jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                return principal;
+            }
+
+            throw new SecurityTokenException("Invalid token");
+        }
         public async Task<AccountResponse> GetMyInfoAsync()
         {
             var username = httpContextAccessor.HttpContext.User.Identity.Name;
@@ -179,29 +237,6 @@ namespace MyApiNetCore8.Repositories.impl
             var userResponse = mapper.Map<AccountResponse>(user);
             userResponse.roles = roles.ToList();
             return userResponse;
-        }
-
-
-        private string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
-
-        private async Task StoreRefreshTokenAsync(User user, string refreshToken)
-        {
-            var refreshTokenEntity = new RefreshToken
-            {
-                Token = refreshToken,
-                Expires = DateTime.Now.AddDays(7)
-            };
-
-            await context.RefreshTokens.AddAsync(refreshTokenEntity);
-            await context.SaveChangesAsync();
         }
 
         public async Task<List<AccountResponse>> GetAllCustomersAsync()
@@ -240,29 +275,7 @@ namespace MyApiNetCore8.Repositories.impl
             return customers;
         }
 
-        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-        {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
-                ValidateLifetime = true
-            };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
 
-            if (securityToken is JwtSecurityToken jwtSecurityToken &&
-                jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature,
-                    StringComparison.InvariantCultureIgnoreCase))
-            {
-                return principal;
-            }
-
-            throw new SecurityTokenException("Invalid token");
-        }
     }
 }

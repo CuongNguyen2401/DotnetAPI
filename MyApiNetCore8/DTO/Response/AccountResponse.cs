@@ -5,6 +5,7 @@ namespace MyApiNetCore8.DTO.Response;
 
 public class AccountResponse : BaseEntity
 {
+    public string id { get; set; }
     public string username { get; set; }
     public string firstName { get; set; }
     public string lastName { get; set; }

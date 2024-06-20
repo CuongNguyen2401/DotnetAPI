@@ -47,7 +47,7 @@ namespace MyApiNetCore8.Controllers
         public async Task<ActionResult<Coupon>> CreateCoupon(CouponRequest coupon)
         {
             var couponResponse = await _service.CreateGlobalCoupon(coupon);
-            return CreatedAtAction("GetCoupon", new ApiResponse<CouponResponse>(1000, "Success", couponResponse));
+            return Ok(new ApiResponse<CouponResponse>(1000, "Success", couponResponse));
 
         }
 

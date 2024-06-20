@@ -50,7 +50,9 @@ namespace MyApiNetCore8.Helper
             //User Map
             CreateMap<User, AccountResponse>()
                 .ForMember(dest => dest.email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Id))
                 .ReverseMap();
+          
             //User Map
         }
     }
